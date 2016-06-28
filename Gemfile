@@ -33,6 +33,10 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 # gem 'capistrano-rails', group: :development
 
 gem 'rack-oauth2'
+gem 'openid_connect'
+gem 'google-id-token'
+gem 'google-api-client'
+
 
 group :development, :test do
   gem 'awesome_print', require:'ap'
