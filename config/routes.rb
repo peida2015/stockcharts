@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  post 'stock_data' => 'stock_data#request'
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
