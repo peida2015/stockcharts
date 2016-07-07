@@ -31,11 +31,11 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
-gem 'rack-cors', :require => 'rack/cors'
-gem 'openid_connect'
-gem 'google-id-token'
-gem 'google-api-client'
 
+gem 'rack-cors', :require => 'rack/cors'
+gem 'google-id-token'
+
+gem 'figaro'
 
 group :development, :test do
   gem 'awesome_print', require:'ap'
