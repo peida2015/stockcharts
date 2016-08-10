@@ -1,0 +1,76 @@
+.xAxis line,
+.xAxis tick,
+.xAxis text,
+.xAxis path,
+.yAxis line,
+.yAxis tick,
+.yAxis text,
+.yAxis path {
+  stroke: blue;
+  stroke-width: 0.3px;
+  opacity: 0.5
+}
+
+.line path {
+  fill: none;
+  stroke: firebrick;
+  stroke-width: 1.5px
+}
+
+text.symbol {
+  font-size: 14px;
+  font-family: monospace;
+}
+
+.symbol rect {
+  fill: lightgray;
+}
+
+.symbol rect.focused {
+  stroke: black;
+  stroke-width: 0.5;
+  fill: yellow
+}
+
+text.symbol:hover {
+  cursor: text
+}
+
+.box rect{
+  fill: white;
+  stroke: gray;
+  stroke-opacity: 0.7;
+}
+
+.xAxis .grid, .yAxis .grid {
+  stroke: lightgray;
+  opacity: 0.7
+}
+
+.box text {
+  stroke: black;
+  stroke-width: 0.1px;
+  font-size: 11px;
+}
+
+.volX text,
+.volY text {
+  stroke: black;
+  stroke-width: 0.2px
+}
+
+.barchart line {
+  stroke: green;
+}
+
+.barchart line:hover {
+  stroke: darkgreen;
+  stroke-width: 3px;
+}
+
+.symbol text {
+  stroke: forestgreen;
+  fill: forestgreen;
+  font-size: 20px;
+  font-family: monospace;
+}

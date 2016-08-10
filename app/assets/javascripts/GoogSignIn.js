@@ -6,7 +6,7 @@
   }
 
   window.callbacks.xhrReq = function (id_token, symbol = "GOOG", startDate = "20130510", endDate = "20150401") {
-    var url = 'http://localhost:3000/stock_data';
+    var url = './stock_data';
     var method = 'POST';
     var xhr = new XMLHttpRequest();
 

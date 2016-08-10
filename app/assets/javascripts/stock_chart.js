@@ -21,6 +21,8 @@
   GraphBuilder.prototype = {
     setSVG: function () {
       this.svgBody = d3.select('body')
+        .append('div').classed('centered', true)
+        .classed('top-margin', true)
         .append('svg').attr('class', 'chart')
         .datum(this.stockData)
         .attr('height', this.height)
