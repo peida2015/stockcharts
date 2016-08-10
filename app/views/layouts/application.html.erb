@@ -1,13 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>StockDataApiWrapper</title>
+  <meta charset="utf-8">
+  <meta name="google-signin-client_id" content="912893063998-d9ashdsl736vkmofhh9acf9opt45sj3b.apps.googleusercontent.com">
+  <title>Stock Charts</title>
   <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
   <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
   <%= csrf_meta_tags %>
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
+
+  <script src="https://www.gstatic.com/firebasejs/3.2.1/firebase.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/3.1.0/firebase-auth.js"></script>
 </head>
 <body>
-
+  <header class="header"></header>
 <%= yield %>
 
 </body>

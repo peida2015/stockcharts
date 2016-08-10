@@ -1,0 +1,28 @@
+// Place all the styles related to the session controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+.header {
+  margin: 0 auto;
+  width: 960px;
+  height: 100px;
+}
+
+
+.gsi {
+  text-align: center;
+  font-size: 28px;
+  color: #47746F;
+  font-family: courier;
+}
+
+.container {
+  // "-moz-min-content" for Mozilla FireFox and "fit-content" for Google Chrome.center the Gooogle Sign-in button.
+  margin: 0 auto;
+  width: -moz-min-content;
+  width: fit-content;
+}
+
+img {
+  height: 300px;
+}
