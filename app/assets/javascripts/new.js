@@ -43,7 +43,12 @@ function onSignIn (googleUser) {
       } else {
         console.log('User already signed-in Firebase.');
       }
+      
+      var id_token = googleUser.getAuthResponse().id_token;
+
+      callbacks.xhrReq(id_token);
     });
+
   }
 
 function isUserEqual(googleUser, firebaseUser) {
