@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   resource :session, only: [:new]
   post 'stock_data' => 'stock_data#verify_serve'
-
+  get 'app_space' => 'stock_data#app_space'
   root 'session#new'
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

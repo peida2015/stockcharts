@@ -4,10 +4,14 @@
 
 .header {
   margin: 0 auto;
-  width: 960px;
+  width: 100%;
   height: 100px;
+  position: fixed;
 }
 
+.top-margin {
+  margin-top: 10%;
+}
 
 .gsi {
   text-align: center;
@@ -18,9 +22,11 @@
 
 .container {
   // "-moz-min-content" for Mozilla FireFox and "fit-content" for Google Chrome.center the Gooogle Sign-in button.
-  margin: 0 auto;
+  margin-left: auto;
+  margin-right: auto;
   width: -moz-min-content;
   width: fit-content;
+
 }
 
 img {
