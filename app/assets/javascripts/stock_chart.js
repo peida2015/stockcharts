@@ -337,7 +337,7 @@
     if (data.status.code === 200) {
       var graph = window._GraphBuilder.singleInstance;
       if (graph === undefined) {
-        graph = window._GraphBuilder.singleInstance = new _GraphBuilder.GraphBuilder(data.results, data.request);
+        graph = window._GraphBuilder.singleInstance = new _GraphBuilder.GraphBuilder(data.results, data.request, 600, $('body').width());
         graph.createChart();
       } else {
         graph.updateChart(data.results, data.request)

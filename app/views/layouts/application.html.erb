@@ -17,6 +17,9 @@
   <nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
         <div class="container">
             <div class="navbar-header">
+                <a class="navbar-brand" href="#">
+                  <%= image_tag('logo.png', class: "icon", alt: "Brand") %>
+                </a>
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
                     Menu <i class="fa fa-bars"></i>
                 </button>
@@ -33,13 +36,7 @@
                         <a href="#page-top"></a>
                     </li>
                     <li class="">
-                        <a class="page-scroll" href="#about">About</a>
-                    </li>
-                    <li class="">
-                        <a class="page-scroll" href="#download">Download</a>
-                    </li>
-                    <li class="">
-                        <a class="page-scroll" href="#contact">Contact</a>
+                        <a class="page-scroll" onclick="window.callbacks.toggleAppAuth()">Login</a>
                     </li>
                 </ul>
             </div>
