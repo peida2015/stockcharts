@@ -224,7 +224,8 @@
           .range([1.5*this.yPadding, 0])
           .nice();
 
-      var yAxis = d3.axisLeft(this.volYScale);
+      var yAxis = d3.axisLeft(this.volYScale)
+              .tickFormat(d3.format(".2s"));
 
       var yDrawn = this.svgBody.append('g')
         .attr('class', 'volY')
@@ -245,7 +246,6 @@
         .selectAll('.volBars')
         .data(this.stockData)
         .enter();
-
 
       var that = this;
 
