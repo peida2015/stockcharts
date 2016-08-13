@@ -291,7 +291,7 @@
             pressCounter++;
             var symEl = d3.select('.symbol text');
             if (pressCounter == 1) { symEl.text(" "); }
-            if (d3.event.key.match(/^\w$/)) {
+            if (d3.event.key.match(/^[\w.]$/)) {
               symEl.text((symEl.text()+d3.event.key).trimLeft());
               bgColor.attr('width', symEl.node().getBBox().width);
             } else if (d3.event.key === "Backspace") {
