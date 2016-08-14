@@ -25,25 +25,27 @@
   };
 
   window.callbacks.signOutApp = function () {
-    // Sign out of the App with Firebase.
-      firebase.auth().signOut().then(function () {
-        $.get('./', function (page) {
-          var parser = new DOMParser();
-          var newPage = parser.parseFromString(page, 'text/html');
-          $(document.body).replaceWith(newPage.body);
-          var button = $('a:contains("Logout")');
-          if (button.length > 0) {
-            button.text('Login');
-            console.log('signed out FB');
-          }
-        })
-      }, function () {
-        console.log("Sign out error");
-      });
-    };
+    // Sign out of the App with Firebase and Google.
+    firebase.auth().signOut().then(function () {
+      gapi.auth2.getAuthInstance().signOut().then(function () {
+        location.reload();
+      }, function() {
+            console.log("Error signing out of firebase");
+      }); // Google sign out end
+    }, function () {
+      console.log("Google sign out error");
+    });//Firebase sign out end
+  };
+
+  window.callbacks.onFailure = function () {
+    console.log('Did not log into Google');
+    console.log('Google Auth Response', googleUser);
+  };
 
   window.callbacks.signBackIn = function () {
-      var googleUser = gapi.auth2.getAuthInstance().currentUser.hg;
+    console.log("signBackIn");
+      // gapi.auth2.getAuthInstance().signIn({ "prompt": "login" });
+      var googleUser = gapi.auth2.getAuthInstance().currentUser.get();
       onSignIn(googleUser);
     };
 })();
@@ -51,7 +53,6 @@
 
 
 function onSignIn (googleUser) {
-  console.log('Google Auth Response', googleUser);
   // We need to register an Observer on Firebase Auth to make sure auth is initialized.
   var unsubscribe = firebase.auth().onAuthStateChanged(function(firebaseUser) {
     unsubscribe();
@@ -101,3 +102,16 @@ function isUserEqual(googleUser, firebaseUser) {
     }
     return false;
 };
+
+function renderButton(signInCB = onSignIn) {
+  var buttonSpec = {
+    'theme': 'dark',
+    'longtitle': false,
+    'width': 180,
+    'height': 50,
+    'scope': 'profile email',
+    'onsuccess': signInCB
+  };
+
+  gapi.signin2.render('g-signin2', buttonSpec);
+}
