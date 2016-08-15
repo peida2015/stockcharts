@@ -10,6 +10,7 @@
 
   var GraphBuilder = _GraphBuilder.GraphBuilder = function (stockData, req = {}, height = 600, width = 1000, xPadding = 100, yPadding = 50) {
     this.stockData = stockData; //Note: only "results" from response
+    this.graphData = [];
     this.req = req;
     this.svgBody = null;
     this.height = height;
@@ -24,7 +25,7 @@
         .append('div').classed('centered', true)
         .classed('top-margin', true)
         .append('svg').attr('class', 'chart')
-        .datum(this.stockData)
+        .datum(this.graphData)
         .attr('height', this.height)
         .attr('width', this.width);
 
@@ -36,7 +37,6 @@
       d3.select('.welcome').remove();
     },
 
-    // tradingDay data conversion
     tradingDayConversion: function () {
       var parser = d3.timeParse("%Y-%m-%d");
 
@@ -48,9 +48,76 @@
       var endDate = this.stockData[this.stockData.length-1].tradingDay;
     },
 
+    convertWeeklyData: function () {
+      this.weeklyData = [];
+      var currWkHigh = 0;
+      var currWkLow = Infinity;
+      var currWkOpen;
+      var currWkClose;
+      var currWkVol;
+      var currWk = { };
+
+      for (var i = 0; i < this.stockData.length; i++) {
+        var currDay = this.stockData[i].tradingDay;
+
+        if (i == 0 && currDay.getDay() !== 1) {
+          // Skip first week if first week does not have complete week data
+          switch (currDay.getDay()) {
+            case 2: i += 3;
+            case 3: i += 2;
+            case 4: i += 1;
+          }
+          continue;
+        };
+
+        if (currDay.getDay() === 1) {
+          currWkOpen = this.stockData[i].open;
+          currWk["tradingDay"] = currDay;
+          currWkVol = this.stockData[i].volume;
+        } else {
+          currWkVol += this.stockData[i].volume;
+        }
+
+        if (this.stockData[i].high > currWkHigh) {
+          currWkHigh = this.stockData[i].high;
+        }
+
+        if (this.stockData[i].low < currWkLow) {
+          currWkLow = this.stockData[i].low;
+        }
+
+        // If Friday is missing, take Thursday as last day of the week. Ignore any week with more than two days missing.
+        if (currDay.getDay() === 5 ||
+            (currDay.getDay() === 4 && this.stockData[i+1].tradingDay.getDay() !== 5)) {
+          currWkClose = this.stockData[i].close;
+          currWk["symbol"] = this.stockData[i].symbol;
+          currWk["open"] = currWkOpen;
+          currWk["high"] = currWkHigh;
+          currWk["low"] = currWkLow;
+          currWk["close"] = this.stockData[i].close;
+          currWk["volume"] = currWkVol;
+          if (currWk["tradingDay"] === undefined) {
+            if (currDay.getDay() === 5) {
+              currWk["tradingDay"] = new Date(currDay-1000*60*60*24*4);
+            } else {
+              currWk["tradingDay"] = new Date(currDay-1000*60*60*24*3);
+            }
+          }
+          this.weeklyData.push(currWk);
+          var currWkHigh = 0;
+          var currWkLow = Infinity;
+          currWk = {};
+        }
+      }
+    },
+
+    dataSelector: function () {
+      this.graphData = this.stockData.length < 100 ? this.stockData : this.weeklyData;
+    },
+
     drawAxes: function () {
-      var startDate = this.stockData[0].tradingDay;
-      var endDate = this.stockData[this.stockData.length-1].tradingDay;
+      var startDate = this.graphData[0].tradingDay;
+      var endDate = this.graphData[this.graphData.length-1].tradingDay;
 
       // Create axis from scaleTime with preset domain and range;
       this.xScale = d3.scaleTime()
@@ -69,12 +136,12 @@
       var max = -Infinity;
       var min = Infinity;
 
-      for (var idx = 0; idx < this.stockData.length; idx++) {
-        if (this.stockData[idx].high > max) {
-            max = this.stockData[idx].high;
+      for (var idx = 0; idx < this.graphData.length; idx++) {
+        if (this.graphData[idx].high > max) {
+            max = this.graphData[idx].high;
         };
-        if (this.stockData[idx].low < min) {
-            min = this.stockData[idx].low;
+        if (this.graphData[idx].low < min) {
+            min = this.graphData[idx].low;
         };
       }
 
@@ -215,7 +282,7 @@
         .attr('transform', 'translate('+this.xPadding+','+(this.height-this.yPadding)+')')
         .call(xAxis);
 
-      var volExt = d3.extent(this.stockData, function (obj) {
+      var volExt = d3.extent(this.graphData, function (obj) {
         return obj.volume;
       })
 
@@ -244,7 +311,7 @@
       var barchart = d3.select('.volX').append('g')
         .attr('class', 'barchart')
         .selectAll('.volBars')
-        .data(this.stockData)
+        .data(this.graphData)
         .enter();
 
       var that = this;
@@ -316,6 +383,8 @@
 
     createChart: function () {
       this.tradingDayConversion();
+      this.convertWeeklyData();
+      this.dataSelector();
       this.setSVG();
       this.drawAxes();
       var line = this.drawLineGraph();
