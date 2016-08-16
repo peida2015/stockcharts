@@ -131,8 +131,8 @@
         .attr('class', 'xAxis')
         .attr('transform', 'translate('+ this.xPadding + ', '+ (this.height-3*this.yPadding)+')')
         .call(xAxis);
-      // Create axis from a scale maximum and minimum stock values
 
+      // Create axis from a scale maximum and minimum stock values
       var max = -Infinity;
       var min = Infinity;
 
@@ -372,6 +372,53 @@
 
     },
 
+    drawTimeline: function () {
+      var startDate = this.stockData[0].tradingDay;
+      var endDate = this.stockData[this.stockData.length-1].tradingDay;
+
+      // Create axis from scaleTime with preset domain and range;
+      var xScale = d3.scaleTime()
+        .domain([startDate, endDate])
+        .range([0, this.width - 2*this.xPadding]);
+
+      var xAxis = d3.axisBottom(xScale);
+
+      var timeline = this.svgBody.append('g')
+        .attr('class', 'timeline')
+        .attr('transform', 'translate('+ this.xPadding+', '+(this.height-20)+')')
+
+      timeline.call(xAxis);
+
+      timeline.append('rect')
+        .attr('class', 'timelineArea')
+        .attr('width', this.width-2*this.xPadding)
+        .attr('height', 20);
+
+      var rangeRect = timeline.append('rect')
+        .attr('class', 'timeRange')
+        .attr('width', this.width-2*this.xPadding)
+        .attr('height', 20);
+
+      var leftHandle = timeline.append('rect')
+        .attr('class', 'handle')
+        .attr('width', 8)
+        .attr('height', 12)
+        .attr('rx', 3)
+        .attr('ry', 3)
+        .attr('y', 4)
+        .attr('x', -4);
+
+      var rightHandle = timeline.append('rect')
+        .attr('class', 'handle')
+        .attr('width', 8)
+        .attr('height', 12)
+        .attr('rx', 3)
+        .attr('ry', 3)
+        .attr('y', 4)
+        .attr('x', this.width-2*this.xPadding-4);
+
+    },
+
     dataRequest: function (symbol) {
       //Remove keyup listener
       d3.select(document).on("keyup", null);
@@ -391,6 +438,7 @@
       this.drawPricesBox(line);
       this.drawVolAxes();
       this.drawVolBars();
+      this.drawTimeline();
     },
 
     updateChart: function (stockData, req) {

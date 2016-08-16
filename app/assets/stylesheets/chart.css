@@ -74,3 +74,19 @@ text.symbol:hover {
   font-size: 20px;
   font-family: monospace;
 }
+
+rect.timelineArea {
+  fill: #a0d0f7;
+  opacity: 0.2;
+}
+
+rect.timeRange {
+  fill: #a0d0f7;
+  opacity: 0.6; 
+}
+
+rect.handle  {
+  fill: lightgray;
+  stroke: black;
+  opacity: 0.8
+}
