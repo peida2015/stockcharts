@@ -417,44 +417,40 @@
         .attr('y', 4)
         .attr('x', this.width-2*this.xPadding-4);
 
-      leftHandle.call(d3.drag().on('drag', function () {
+      var dragHandler = function () {
         var el = d3.select(this);
         var rangeRect = d3.select('rect.timeRange');
         var initPos = parseInt(el.attr('x'));
         var displacement = event.movementX;
-        var rightHandlePos = parseInt($('rect.handle').last().attr('x'));
+        // Get initWidth from the background opaque rectangle.
         var initWidth = d3.select('rect.timelineArea').attr('width');
-        var newPos = (displacement + initPos) >-4 ? (displacement + initPos) : -4;
-        // debugger
-        el.attr('x', newPos);
-        rangeRect.attr('x', newPos+4);
 
-        if (newPos > -4) {
-          rangeRect.attr('width', parseInt(rangeRect.attr("width"))-displacement);
+        if ($('rect.handle').last().attr('x') === el.attr('x')) {
+          var otherHandlePos = $('rect.handle').first().attr('x')
         } else {
-          rangeRect.attr('width', rightHandlePos + 4);
+          var otherHandlePos = $('rect.handle').last().attr('x');
         };
+        otherHandlePos = parseInt(otherHandlePos);
 
-      }));
-
-      rightHandle.call(d3.drag().on('drag', function () {
-        var el = d3.select(this);
-        var rangeRect = d3.select('rect.timeRange');
-        var initPos = parseInt(el.attr('x'));
-        var displacement = event.movementX;
-        var leftHandlePos = parseInt($('rect.handle').first().attr('x'));
-        var initWidth = d3.select('rect.timelineArea').attr('width');
-        var newPos = (displacement + initPos) < initWidth-4 ? (displacement + initPos) : initWidth-4;
+        // Enforce bounds
+        var newPos = (displacement + initPos) >= -4 ? (displacement + initPos) : -4;
+        newPos = newPos <= initWidth-4 ? newPos : initWidth-4;
 
         el.attr('x', newPos);
 
-        if (newPos < initWidth-4) {
-          rangeRect.attr('width', parseInt(rangeRect.attr("width")) + displacement);
+        // Set rangeRect's position and width based on the new handle positions
+        if (newPos > otherHandlePos) {
+          rangeRect.attr('x', otherHandlePos+4);
+          rangeRect.attr('width', newPos-otherHandlePos);
         } else {
-          rangeRect.attr('width', initWidth - leftHandlePos - 4);
-        };
+          rangeRect.attr('x', newPos+4);
+          rangeRect.attr('width', otherHandlePos-newPos);
+        }
+      };
 
-      }));
+      leftHandle.call(d3.drag().on('drag', dragHandler));
+      rightHandle.call(d3.drag().on('drag', dragHandler));
+
     },
 
     dataRequest: function (symbol) {
