@@ -446,11 +446,29 @@
           rangeRect.attr('x', newPos+4);
           rangeRect.attr('width', otherHandlePos-newPos);
         }
+        if (d3.event.type === "end") {
+          dragEnd();
+        }
       };
 
-      leftHandle.call(d3.drag().on('drag', dragHandler));
-      rightHandle.call(d3.drag().on('drag', dragHandler));
+      var dragEnd = function () {
+        // debugger
+        var rangeRect = $('rect.timeRange');
+        var leftEnd = parseInt(rangeRect.attr('x'));
+        var length = parseInt(rangeRect.attr('width'));
+        var startDate = this.invert(leftEnd);
+        var endDate = this.invert(leftEnd + length);
+        console.log('startDate: ', startDate);
+        console.log('endDate: ', endDate);
+      }.bind(xScale, this);
 
+      // Put a drag listener on both handles.
+      d3.selectAll('rect.handle').call(d3.drag().on("drag end", dragHandler, dragEnd));
+      // d3.selectAll('rect.handle').call(d3.drag().on('end', dragHandler));
+      // leftHandle.on('drag', dragHandler);
+      // leftHandle.call(d3.drag().on('end', dragEnd));
+      // rightHandle.call(d3.drag().on('drag', dragHandler));
+      // rightHandle.call(d3.drag().on('end', dragEnd));
     },
 
     dataRequest: function (symbol) {
