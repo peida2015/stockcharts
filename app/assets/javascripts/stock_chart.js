@@ -387,17 +387,17 @@
         .attr('class', 'timeline')
         .attr('transform', 'translate('+ this.xPadding+', '+(this.height-20)+')')
 
-      timeline.call(xAxis);
-
       timeline.append('rect')
-        .attr('class', 'timelineArea')
-        .attr('width', this.width-2*this.xPadding)
-        .attr('height', 20);
+      .attr('class', 'timelineArea')
+      .attr('width', this.width-2*this.xPadding)
+      .attr('height', 20);
 
       var rangeRect = timeline.append('rect')
-        .attr('class', 'timeRange')
-        .attr('width', this.width-2*this.xPadding)
-        .attr('height', 20);
+      .attr('class', 'timeRange')
+      .attr('width', this.width-2*this.xPadding)
+      .attr('height', 20);
+
+      timeline.call(xAxis);
 
       var leftHandle = timeline.append('rect')
         .attr('class', 'handle')
@@ -417,6 +417,44 @@
         .attr('y', 4)
         .attr('x', this.width-2*this.xPadding-4);
 
+      leftHandle.call(d3.drag().on('drag', function () {
+        var el = d3.select(this);
+        var rangeRect = d3.select('rect.timeRange');
+        var initPos = parseInt(el.attr('x'));
+        var displacement = event.movementX;
+        var rightHandlePos = parseInt($('rect.handle').last().attr('x'));
+        var initWidth = d3.select('rect.timelineArea').attr('width');
+        var newPos = (displacement + initPos) >-4 ? (displacement + initPos) : -4;
+        // debugger
+        el.attr('x', newPos);
+        rangeRect.attr('x', newPos+4);
+
+        if (newPos > -4) {
+          rangeRect.attr('width', parseInt(rangeRect.attr("width"))-displacement);
+        } else {
+          rangeRect.attr('width', rightHandlePos + 4);
+        };
+
+      }));
+
+      rightHandle.call(d3.drag().on('drag', function () {
+        var el = d3.select(this);
+        var rangeRect = d3.select('rect.timeRange');
+        var initPos = parseInt(el.attr('x'));
+        var displacement = event.movementX;
+        var leftHandlePos = parseInt($('rect.handle').first().attr('x'));
+        var initWidth = d3.select('rect.timelineArea').attr('width');
+        var newPos = (displacement + initPos) < initWidth-4 ? (displacement + initPos) : initWidth-4;
+
+        el.attr('x', newPos);
+
+        if (newPos < initWidth-4) {
+          rangeRect.attr('width', parseInt(rangeRect.attr("width")) + displacement);
+        } else {
+          rangeRect.attr('width', initWidth - leftHandlePos - 4);
+        };
+
+      }));
     },
 
     dataRequest: function (symbol) {
