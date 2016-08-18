@@ -119,7 +119,7 @@
         this.graphData = this.weeklyData;
       } else {
         var data = this.getRangeData(this.stockData, startDate, endDate);
-        this.graphData = data.length <= 200 ? data : this.getRangeData(this.weeklyData, startDate, endDate);
+        this.graphData = data.length <= 150 ? data : this.getRangeData(this.weeklyData, startDate, endDate);
       }
 
     },
@@ -207,6 +207,48 @@
 
       //return lineDrawn so other elements can be attached to it.
       return lineDrawn;
+    },
+
+    drawCandlesticks: function () {
+      var candlesticks = this.mainGraphs.append('g')
+        .attr('class', 'candlesticks')
+        .attr('transform', 'translate('+this.xPadding+', '+this.yPadding+')')
+        .selectAll('.candles')
+        .data(this.graphData).enter();
+
+      var sticks = candlesticks.append('line')
+        .classed('sticks', true)
+        .attr('x1', function (d) {
+          return this.xScale(d.tradingDay);
+        }.bind(this))
+        .attr('x2', function (d) {
+          return this.xScale(d.tradingDay);
+        }.bind(this))
+        .attr('y1', function (d) {
+          return this.yScale(d.high);
+        }.bind(this))
+        .attr('y2', function (d) {
+          return this.yScale(d.low);
+        }.bind(this))
+
+      var candles = candlesticks.append('rect')
+        .attr('class', function (d) {
+          return d.close > d.open ? "gain" : "loss";
+        })
+        .attr('x', function (d) {
+          var stickPos = this.xScale(d.tradingDay)
+          return this.graphData.length > 90 ? stickPos-3 : stickPos-4;
+        }.bind(this))
+        .attr('y', function (d) {
+          var higherPoint = d.open > d.close ? d.open : d.close;
+          return this.yScale(higherPoint);
+        }.bind(this))
+        .attr('width', function(d) {
+          return this.graphData.length > 90 ? 6 : 8
+        }.bind(this))
+        .attr('height', function (d) {
+          return Math.abs(this.yScale(d.close) - this.yScale(d.open));
+        }.bind(this));
     },
 
     drawPricesBox: function (line) {
@@ -496,8 +538,9 @@
 
     createChart: function () {
       this.drawAxes();
-      var line = this.drawLineGraph();
-      this.drawPricesBox(line);
+      // var line = this.drawLineGraph();
+      // this.drawPricesBox(line);
+      this.drawCandlesticks();
       this.drawVolAxes();
       this.drawVolBars();
       this.drawSymbol();
