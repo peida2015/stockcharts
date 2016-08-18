@@ -439,7 +439,7 @@
         var el = d3.select(this);
         var rangeRect = d3.select('rect.timeRange');
         var initPos = parseInt(el.attr('x'));
-        var displacement = event.movementX;
+        var displacement = d3.event.dx;
         // Get initWidth from the background opaque rectangle.
         var initWidth = d3.select('rect.timelineArea').attr('width');
 

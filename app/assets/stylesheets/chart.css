@@ -91,3 +91,7 @@ rect.handle  {
   stroke: black;
   opacity: 1
 }
+
+rect.handle:hover {
+  cursor: grab;
+}
