@@ -1,3 +1,4 @@
+/* Main graph axes */
 .xAxis line,
 .xAxis tick,
 .xAxis text,
@@ -11,12 +12,16 @@
   opacity: 0.5
 }
 
+
+/* Line graph */
 .line path {
   fill: none;
   stroke: firebrick;
   stroke-width: 1.5px
 }
 
+
+/* Symbol area */
 text.symbol {
   font-size: 14px;
   font-family: monospace;
@@ -32,10 +37,18 @@ text.symbol {
   fill: yellow
 }
 
+.symbol text {
+  stroke: forestgreen;
+  fill: forestgreen;
+  font-size: 20px;
+  font-family: monospace;
+}
+
 text.symbol:hover {
   cursor: text
 }
 
+/* Info box (HLOC)*/
 .box rect{
   fill: white;
   stroke: gray;
@@ -53,6 +66,8 @@ text.symbol:hover {
   font-size: 11px;
 }
 
+
+/*Volume barchart*/
 .volX text,
 .volY text {
   stroke: black;
@@ -69,13 +84,23 @@ text.symbol:hover {
   stroke-width: 3px;
 }
 
-.symbol text {
-  stroke: forestgreen;
-  fill: forestgreen;
-  font-size: 20px;
-  font-family: monospace;
+
+/* Candlestick chart */
+line.sticks {
+  stroke: black;
 }
 
+rect.gain {
+  stroke: black;
+  fill: lightgreen;
+}
+rect.loss {
+  stroke: black;
+  fill: red;
+}
+
+
+/* Time Range Line */
 rect.timelineArea {
   fill: #a0d0f7;
   opacity: 0.2;
