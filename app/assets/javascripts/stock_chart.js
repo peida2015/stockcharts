@@ -303,7 +303,7 @@
 
       this.volYScale = d3.scaleLinear()
           .domain(volExt)
-          .range([1.5*this.yPadding, 0])
+          .range([1.3*this.yPadding, 0])
           .nice();
 
       var yAxis = d3.axisLeft(this.volYScale)
@@ -311,13 +311,16 @@
 
       var yDrawn = this.mainGraphs.append('g')
         .attr('class', 'volY')
-        .attr('transform', 'translate('+this.xPadding+','+(this.height-2.5*this.yPadding)+')')
+        .attr('transform', 'translate('+this.xPadding+','+(this.height-2.3*this.yPadding)+')')
         .call(yAxis.ticks(2));
 
+      var day1Day = this.graphData[0].tradingDay.getDay();
+      var day2Day = this.graphData[1].tradingDay.getDay();
+      var timeUnit = day1Day === day2Day ? "Wk" : "Day";
       yDrawn.append('text')
-        .attr('dx', 10)
-        .attr('dy', 0)
-        .text('Vol');
+        .attr('dx', 13)
+        .attr('dy', -5)
+        .text('Vol('+timeUnit+')');
     },
 
     drawVolBars: function () {
@@ -476,8 +479,6 @@
         var endDate = xScale.invert(leftEnd + length);
         this.dataSelector(startDate, endDate);
         this.updateChart();
-        console.log('startDate: ', startDate);
-        console.log('endDate: ', endDate);
       }.bind(this, xScale);
 
       // Put a drag listener on both handles.
