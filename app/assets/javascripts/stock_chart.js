@@ -8,6 +8,9 @@
     window.callbacks = {};
   }
 
+  if (window.utilities === undefined) {
+    window.utilities = {};
+  }
   var GraphBuilder = _GraphBuilder.GraphBuilder = function (stockData, req = {}, height = 600, width = 1000, xPadding = 100, yPadding = 50) {
     this.stockData = stockData; //Note: only "results" from response
     this.graphData = [];
@@ -25,14 +28,14 @@
         .append('div').classed('centered', true)
         .classed('top-margin', true)
         .append('svg').attr('class', 'chart')
-        .datum(this.graphData)
         .attr('height', this.height)
         .attr('width', this.width);
 
       this.svgBody.exit().remove();
 
-      this.drawSymbol();
-
+      this.mainGraphs = this.svgBody.append('g')
+        .datum(this.graphData)
+        .attr('class', 'mainGraphs')
       // Remove the prompt to sign in.
       d3.select('.welcome').remove();
     },
@@ -111,8 +114,20 @@
       }
     },
 
-    dataSelector: function () {
-      this.graphData = this.stockData.length < 100 ? this.stockData : this.weeklyData;
+    dataSelector: function (startDate = null, endDate = null) {
+      if (startDate === endDate) {
+        this.graphData = this.weeklyData;
+      } else {
+        var data = this.getRangeData(this.stockData, startDate, endDate);
+        this.graphData = data.length <= 200 ? data : this.getRangeData(this.weeklyData, startDate, endDate);
+      }
+
+    },
+
+    getRangeData: function (data, startDate, endDate) {
+      return data.filter(function (d) {
+        return (d.tradingDay > startDate && d.tradingDay < endDate)
+      });
     },
 
     drawAxes: function () {
@@ -127,7 +142,7 @@
       var xAxis = d3.axisBottom(this.xScale);
 
       // Attach the drawn x-axis to the SVG body
-      var xDrawn = this.svgBody.append('g')
+      var xDrawn = this.mainGraphs.append('g')
         .attr('class', 'xAxis')
         .attr('transform', 'translate('+ this.xPadding + ', '+ (this.height-3*this.yPadding)+')')
         .call(xAxis);
@@ -150,7 +165,7 @@
         .range([this.height - 4*this.yPadding, 0]);
       var yAxis = d3.axisLeft(this.yScale);
 
-      var yDrawn = this.svgBody.append('g')
+      var yDrawn = this.mainGraphs.append('g')
         .attr('class', 'yAxis')
         .attr('transform', 'translate('+this.xPadding+', '+this.yPadding+')')
         .call(yAxis);
@@ -182,7 +197,7 @@
         .x(function (d) {  return that.xScale(d.tradingDay);  })
         .y(function (d) {  return that.yScale(d.close);  });
 
-      var lineDrawn = this.svgBody.append('g')
+      var lineDrawn = this.mainGraphs.append('g')
         .attr('class','line');
 
       lineDrawn
@@ -277,7 +292,7 @@
 
     drawVolAxes: function () {
       var xAxis = d3.axisBottom(this.xScale);
-      this.svgBody.append('g')
+      this.mainGraphs.append('g')
         .attr('class', 'volX')
         .attr('transform', 'translate('+this.xPadding+','+(this.height-this.yPadding)+')')
         .call(xAxis);
@@ -294,7 +309,7 @@
       var yAxis = d3.axisLeft(this.volYScale)
               .tickFormat(d3.format(".2s"));
 
-      var yDrawn = this.svgBody.append('g')
+      var yDrawn = this.mainGraphs.append('g')
         .attr('class', 'volY')
         .attr('transform', 'translate('+this.xPadding+','+(this.height-2.5*this.yPadding)+')')
         .call(yAxis.ticks(2));
@@ -334,7 +349,7 @@
     drawSymbol: function () {
       var that = this;
 
-      var symb = this.svgBody.append('g')
+      var symb = this.mainGraphs.append('g')
         .attr('transform', 'translate('+that.width/2+','+that.yPadding/2+')')
         .attr('class', 'symbol');
 
@@ -453,22 +468,20 @@
 
       var dragEnd = function () {
         // debugger
+        var xScale = arguments[0];
         var rangeRect = $('rect.timeRange');
         var leftEnd = parseInt(rangeRect.attr('x'));
         var length = parseInt(rangeRect.attr('width'));
-        var startDate = this.invert(leftEnd);
-        var endDate = this.invert(leftEnd + length);
+        var startDate = xScale.invert(leftEnd);
+        var endDate = xScale.invert(leftEnd + length);
+        this.dataSelector(startDate, endDate);
+        this.updateChart();
         console.log('startDate: ', startDate);
         console.log('endDate: ', endDate);
-      }.bind(xScale, this);
+      }.bind(this, xScale);
 
       // Put a drag listener on both handles.
       d3.selectAll('rect.handle').call(d3.drag().on("drag end", dragHandler, dragEnd));
-      // d3.selectAll('rect.handle').call(d3.drag().on('end', dragHandler));
-      // leftHandle.on('drag', dragHandler);
-      // leftHandle.call(d3.drag().on('end', dragEnd));
-      // rightHandle.call(d3.drag().on('drag', dragHandler));
-      // rightHandle.call(d3.drag().on('end', dragEnd));
     },
 
     dataRequest: function (symbol) {
@@ -481,23 +494,40 @@
     },
 
     createChart: function () {
-      this.tradingDayConversion();
-      this.convertWeeklyData();
-      this.dataSelector();
-      this.setSVG();
       this.drawAxes();
       var line = this.drawLineGraph();
       this.drawPricesBox(line);
       this.drawVolAxes();
       this.drawVolBars();
-      this.drawTimeline();
+      this.drawSymbol();
     },
 
-    updateChart: function (stockData, req) {
-      this.stockData = stockData;
-      this.svgBody.remove();
+    updateChart: function () {
+      this.mainGraphs.remove();
+      this.mainGraphs = this.svgBody.append('g').attr('class', 'mainGraphs')
+        .datum(this.graphData)
 
       this.createChart();
+    },
+
+    updateData: function (stockData, req) {
+      this.svgBody.remove();
+      this.req = req;
+      this.dataPreparation(stockData);
+      this.drawSVG();
+    },
+
+    dataPreparation: function (stockData) {
+      this.stockData = stockData;
+      this.tradingDayConversion();
+      this.convertWeeklyData();
+      this.dataSelector();
+    },
+
+    drawSVG: function () {
+      this.setSVG();
+      this.createChart();
+      this.drawTimeline();
     }
 
   }
@@ -507,11 +537,13 @@
       var graph = window._GraphBuilder.singleInstance;
       if (graph === undefined) {
         graph = window._GraphBuilder.singleInstance = new _GraphBuilder.GraphBuilder(data.results, data.request, 600, $('body').width());
-        graph.createChart();
+        graph.dataPreparation(data.results);
+        graph.drawSVG();
       } else {
-        graph.updateChart(data.results, data.request)
+        graph.updateData(data.results, data.request);
       }
     }
 
   }
+
 })();
