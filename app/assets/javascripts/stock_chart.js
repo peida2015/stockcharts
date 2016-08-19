@@ -91,7 +91,7 @@
 
         // If Friday is missing, take Thursday as last day of the week. Ignore any week with more than two days missing.
         if (currDay.getDay() === 5 ||
-            (currDay.getDay() === 4 && this.stockData[i+1].tradingDay.getDay() !== 5)) {
+            (currDay.getDay() === 4 && (this.stockData[i+1] === undefined || this.stockData[i+1].tradingDay.getDay() !== 5))) {
           currWkClose = this.stockData[i].close;
           currWk["symbol"] = this.stockData[i].symbol;
           currWk["open"] = currWkOpen;
