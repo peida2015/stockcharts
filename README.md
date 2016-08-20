@@ -21,7 +21,7 @@ This website is for demonstration purpose only.  Stock data is provided by BarCh
 [ ] Automatically choose appropriate type of data (weekly vs daily) for best display of Candlestick charts;
 
 
-## Approach
+## Technical Considerations
 
 1. Use stock data from BarChart getHistory API without exposing the API key on the frontend JavaScript codes.  API key is set as environment variable to a rails app that fetches data and relays it to frontend JS code.
 
@@ -32,6 +32,8 @@ This website is for demonstration purpose only.  Stock data is provided by BarCh
 4. Object-oriented programming.  Use a single instance of `GraphBuilder` to manage instance data and build different types of graphs.  
 
 5. Minimize the number of API calls, which is limited to 1500 queries/day, by requesting the daily data for a maximum date range (2 years) for each symbol and produce weekly data in frontend.
+
+6. Use a binary search helper method in getRangeData to select data within a time range.
 
 
 ## Features for the Future
