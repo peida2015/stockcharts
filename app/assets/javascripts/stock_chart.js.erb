@@ -573,12 +573,17 @@
         .attr('width', 25)
         .attr('xlink:href', "<%= image_url('cs-icon.png') %>");
 
-      var clickHandler = function () {
-        console.log('clicked');
+      var that = this;
 
-        if (!d3.select(this).classed('selected')) {
+      var clickHandler = function () {
+        var el = d3.select(this);
+        if (!el.classed('selected')) {
           d3.select('rect.icon-bg.selected').classed('selected', false);
-          d3.select(this).classed('selected', true);
+          el.classed('selected', true);
+
+          parseInt(el.attr('x')) === 10 ? that.chartType = "line" : that.chartType = "candlesticks";
+
+          that.updateChart();
         }
       };
 
@@ -602,9 +607,12 @@
     },
     createChart: function () {
       this.drawAxes();
-      // var line = this.drawLineGraph();
-      // this.drawPricesBox(line);
-      this.drawCandlesticks();
+      if (this.chartType === "candlesticks") {
+        this.drawCandlesticks();
+      } else {
+        var line = this.drawLineGraph();
+        this.drawPricesBox(line);
+      }
       this.drawVolAxes();
       this.drawVolBars();
       this.drawSymbol();
@@ -646,6 +654,7 @@
       var graph = window._GraphBuilder.singleInstance;
       if (graph === undefined) {
         graph = window._GraphBuilder.singleInstance = new _GraphBuilder.GraphBuilder(data.results, data.request, 600, $('body').width());
+        graph.chartType = "candlesticks";
         graph.dataPreparation(data.results);
         graph.drawSVG();
       } else {
