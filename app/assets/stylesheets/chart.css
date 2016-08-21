@@ -120,3 +120,17 @@ rect.handle  {
 rect.handle:hover {
   cursor: grab;
 }
+
+
+/* Chart Selector icons */
+rect.icon-bg {
+  fill: gray;
+  stroke: black;
+  opacity: 0.2;
+}
+
+rect.icon-bg.selected {
+  fill: none;
+  stroke: none;
+  opacity: 0;
+}

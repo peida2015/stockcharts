@@ -554,6 +554,52 @@
       console.log("dataRequest "+symbol);
     },
 
+    drawChartTypeSelector: function () {
+      var chartIcons = this.svgBody.append('g').attr('class', 'chartIcons');
+
+      var lineIcon = chartIcons.append('image')
+        .attr('class', 'lg-icon')
+        .attr('x', '10')
+        .attr('y', '10')
+        .attr('height', 25)
+        .attr('width', 25)
+        .attr('xlink:href', "<%= image_url('lg-icon.png') %>");
+
+      var candlestickIcon = chartIcons.append('image')
+        .attr('class', 'cs-icon')
+        .attr('x', '50')
+        .attr('y', '10')
+        .attr('height', 25)
+        .attr('width', 25)
+        .attr('xlink:href', "<%= image_url('cs-icon.png') %>");
+
+      var clickHandler = function () {
+        console.log('clicked');
+
+        if (!d3.select(this).classed('selected')) {
+          d3.select('rect.icon-bg.selected').classed('selected', false);
+          d3.select(this).classed('selected', true);
+        }
+      };
+
+      var lineIconBg = chartIcons.append('rect')
+        .classed('icon-bg', true)
+        .attr('x', 10)
+        .attr('y', 10)
+        .attr('height', 25)
+        .attr('width', 25)
+        .on('click', clickHandler);
+
+      var csIconBg = chartIcons.append('rect')
+        .classed('icon-bg', true)
+        .classed('selected', true)
+        .attr('x', 50)
+        .attr('y', 10)
+        .attr('height', 25)
+        .attr('width', 25)
+        .on('click', clickHandler);
+
+    },
     createChart: function () {
       this.drawAxes();
       // var line = this.drawLineGraph();
@@ -590,6 +636,7 @@
       this.setSVG();
       this.createChart();
       this.drawTimeline();
+      this.drawChartTypeSelector();
     }
 
   }
