@@ -63,12 +63,17 @@
       for (var i = 0; i < this.stockData.length; i++) {
         var currDay = this.stockData[i].tradingDay;
 
-        if (i == 0 && currDay.getDay() !== 1) {
+        if (i === 0 && currDay.getDay() !== 1 && currDay.getDay() !== 2) {
           // Skip first week if first week does not have complete week data
           switch (currDay.getDay()) {
-            case 2: i += 3;
-            case 3: i += 2;
-            case 4: i += 1;
+            case 3:
+              i += 2;
+              break;
+            case 4:
+              i += 1;
+              break;
+            default:
+              break;
           }
           continue;
         };
@@ -102,13 +107,18 @@
           if (currWk["tradingDay"] === undefined) {
             if (currDay.getDay() === 5) {
               currWk["tradingDay"] = new Date(currDay-1000*60*60*24*4);
+              currWk["open"] = this.stockData[i-3].open;
             } else {
               currWk["tradingDay"] = new Date(currDay-1000*60*60*24*3);
+              currWk["open"] = this.stockData[i-2].open;
             }
           }
           this.weeklyData.push(currWk);
-          var currWkHigh = 0;
-          var currWkLow = Infinity;
+          currWkHigh = 0;
+          currWkLow = Infinity;
+          currWkOpen = null;
+          currWkClose = null;
+          currWkVol = 0;
           currWk = {};
         }
       }
@@ -216,7 +226,6 @@
     },
 
     drawCandlesticks: function () {
-      debugger
       var candlesticks = this.mainGraphs.append('g')
         .attr('class', 'candlesticks')
         .attr('transform', 'translate('+this.xPadding+', '+this.yPadding+')')
