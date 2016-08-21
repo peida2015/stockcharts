@@ -124,10 +124,16 @@
 
     },
 
-    getRangeData: function (data, startDate, endDate) {
-      return data.filter(function (d) {
-        return (d.tradingDay > startDate && d.tradingDay < endDate)
-      });
+    getRangeData: function (data, startDate, endDate = null) {
+      if (endDate === null || endDate === undefined) {
+        var endIdx = data.length;
+      } else {
+        var endIdx = window.utilities.bsDate(data, endDate);
+      }
+
+      var startIdx = window.utilities.bsDate(data, startDate);
+
+      return data.slice(startIdx, endIdx);
     },
 
     drawAxes: function () {
@@ -210,45 +216,48 @@
     },
 
     drawCandlesticks: function () {
+      debugger
       var candlesticks = this.mainGraphs.append('g')
         .attr('class', 'candlesticks')
         .attr('transform', 'translate('+this.xPadding+', '+this.yPadding+')')
         .selectAll('.candles')
         .data(this.graphData).enter();
 
+      var that = this;
+
       var sticks = candlesticks.append('line')
         .classed('sticks', true)
         .attr('x1', function (d) {
-          return this.xScale(d.tradingDay);
-        }.bind(this))
+          return that.xScale(d.tradingDay);
+        })
         .attr('x2', function (d) {
-          return this.xScale(d.tradingDay);
-        }.bind(this))
+          return that.xScale(d.tradingDay);
+        })
         .attr('y1', function (d) {
-          return this.yScale(d.high);
-        }.bind(this))
+          return that.yScale(d.high);
+        })
         .attr('y2', function (d) {
-          return this.yScale(d.low);
-        }.bind(this))
+          return that.yScale(d.low);
+        })
 
       var candles = candlesticks.append('rect')
         .attr('class', function (d) {
           return d.close > d.open ? "gain" : "loss";
         })
         .attr('x', function (d) {
-          var stickPos = this.xScale(d.tradingDay)
-          return this.graphData.length > 90 ? stickPos-3 : stickPos-4;
-        }.bind(this))
+          var stickPos = that.xScale(d.tradingDay)
+          return that.graphData.length > 90 ? stickPos-3 : stickPos-4;
+        })
         .attr('y', function (d) {
           var higherPoint = d.open > d.close ? d.open : d.close;
-          return this.yScale(higherPoint);
-        }.bind(this))
+          return that.yScale(higherPoint);
+        })
         .attr('width', function(d) {
-          return this.graphData.length > 90 ? 6 : 8
-        }.bind(this))
+          return that.graphData.length > 90 ? 6 : 8
+        })
         .attr('height', function (d) {
-          return Math.abs(this.yScale(d.close) - this.yScale(d.open));
-        }.bind(this));
+          return Math.abs(that.yScale(d.close) - that.yScale(d.open));
+        });
     },
 
     drawPricesBox: function (line) {
@@ -589,5 +598,26 @@
     }
 
   }
+
+  window.utilities.bsDate = function (data, date) {
+      // A number is returned for any date input.
+      if (data.length <= 1) { return 0;  }
+
+      var oneDay = 1000*60*60*24;
+
+      var midIdx = Math.floor(data.length/2);
+
+      var timeDiff = data[midIdx].tradingDay - date;
+
+      // There is no exact Datetime match, match tolerance is oneDay.
+      if (Math.abs(timeDiff) < oneDay) { return midIdx; }
+
+      if (timeDiff > 0) {
+        return window.utilities.bsDate(data.slice(0, midIdx), date);
+      } else {
+        return midIdx + window.utilities.bsDate(data.slice(midIdx, data.length), date)
+      }
+
+    }
 
 })();
