@@ -448,6 +448,13 @@
           });
         });
 
+      var data = that.graphData;
+      var change = (data[data.length-1].close - data[0].open)/data[0].open;
+
+
+      symb.append('text').attr('class', change >= 0 ? 'pos' : 'neg')
+        .attr('x', 70).text(d3.format("+.2%")(change));;
+
     },
 
     drawTimeline: function () {

@@ -12,6 +12,12 @@
   opacity: 0.5
 }
 
+.xAxis .grid, .yAxis .grid {
+  stroke: gray;
+  opacity: 0.7;
+  stroke-dasharray: 5;
+  stroke-width: 0.3;
+}
 
 /* Line graph */
 .line path {
@@ -55,10 +61,6 @@ text.symbol:hover {
   stroke-opacity: 0.7;
 }
 
-.xAxis .grid, .yAxis .grid {
-  stroke: lightgray;
-  opacity: 0.7
-}
 
 .box text {
   stroke: black;
@@ -133,4 +135,17 @@ rect.icon-bg.selected {
   fill: none;
   stroke: none;
   opacity: 0;
+}
+
+/* Change indicator */
+text.pos {
+  fill: lightgreen;
+  /*font-size: 14px;
+  font-family: monospace;*/
+}
+
+text.neg {
+  fill: red;
+  /*font-size: 14px;
+  font-family: monospace;*/
 }
