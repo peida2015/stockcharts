@@ -416,10 +416,18 @@
         .attr('transform', 'translate('+that.width/2+','+that.yPadding/2+')')
         .attr('class', 'symbol');
 
+      var fadeInText = function () {
+        console.log('hovered');
+        d3.select('text.teach').transition().duration(3000)
+          .style("opacity", 1)
+          .transition().duration(600)
+          .style("opacity", 0);
+      };
+
       symb.append('text')
         .text(function (d) {
           return  d[0].symbol;
-        });
+        }).on('mouseover', fadeInText);
 
       var bgColor = symb.insert('rect', ":first-child")
         .attr('x', 0)
@@ -451,9 +459,12 @@
       var data = that.graphData;
       var change = (data[data.length-1].close - data[0].open)/data[0].open;
 
-
       symb.append('text').attr('class', change >= 0 ? 'pos' : 'neg')
-        .attr('x', 70).text(d3.format("+.2%")(change));;
+        .attr('x', 70).text(d3.format("+.2%")(change));
+
+      symb.append('text').attr('class', 'teach')
+      .text('Click and type SYMBOL when yellow. Hit ENTER.')
+      .attr('y', 30);
 
     },
 

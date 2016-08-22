@@ -140,12 +140,17 @@ rect.icon-bg.selected {
 /* Change indicator */
 text.pos {
   fill: lightgreen;
-  /*font-size: 14px;
-  font-family: monospace;*/
 }
 
 text.neg {
   fill: red;
-  /*font-size: 14px;
-  font-family: monospace;*/
+}
+
+/* Instruction text */
+text.teach {
+  font-size: 12px;
+  fill: black;
+  stroke-width: 0.2;
+  text-anchor: middle;
+  opacity: 0;
 }
