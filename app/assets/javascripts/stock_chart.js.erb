@@ -296,11 +296,9 @@
       var tDay = arguments[7];
 
       var currDate = this.xScale.invert(eventCoor[0]-100);
+      var currIdx = window.utilities.bsDate(this.stockData, currDate);
 
-      var currVal = this.stockData.find(function (item) {
-        return (
-          item.tradingDay.getDate() === currDate.getDate() && item.tradingDay.getMonth() === currDate.getMonth() && item.tradingDay.getFullYear() === currDate.getFullYear());
-      });
+      var currVal = this.stockData[currIdx];
 
       if (currVal !== undefined) {
         rect
@@ -417,10 +415,9 @@
         .attr('class', 'symbol');
 
       var fadeInText = function () {
-        console.log('hovered');
         d3.select('text.teach').transition().duration(3000)
           .style("opacity", 1)
-          .transition().duration(600)
+          .transition().duration(1000)
           .style("opacity", 0);
       };
 
@@ -465,6 +462,8 @@
       symb.append('text').attr('class', 'teach')
       .text('Click and type SYMBOL when yellow. Hit ENTER.')
       .attr('y', 30);
+
+      fadeInText();
 
     },
 
@@ -623,6 +622,7 @@
         .on('click', clickHandler);
 
     },
+
     createChart: function () {
       this.drawAxes();
       if (this.chartType === "candlesticks") {
