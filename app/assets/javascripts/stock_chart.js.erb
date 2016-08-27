@@ -482,7 +482,7 @@
         .attr('class', 'timeline')
         .attr('transform', 'translate('+ this.xPadding+', '+(this.height-20)+')')
 
-      timeline.append('rect')
+      var timelineArea = timeline.append('rect')
       .attr('class', 'timelineArea')
       .attr('width', this.width-2*this.xPadding)
       .attr('height', 20);
@@ -517,8 +517,8 @@
         var rangeRect = d3.select('rect.timeRange');
         var initPos = parseInt(el.attr('x'));
         var displacement = d3.event.dx;
-        // Get initWidth from the background opaque rectangle.
-        var initWidth = d3.select('rect.timelineArea').attr('width');
+        // Get initWidth from the background opaque rectangle 'timelineArea'.
+        var initWidth = timelineArea.attr('width');
 
         if ($('rect.handle').last().attr('x') === el.attr('x')) {
           var otherHandlePos = $('rect.handle').first().attr('x')
@@ -547,7 +547,6 @@
       };
 
       var dragEnd = function () {
-        // debugger
         var xScale = arguments[0];
         var rangeRect = $('rect.timeRange');
         var leftEnd = parseInt(rangeRect.attr('x'));
@@ -560,6 +559,28 @@
 
       // Put a drag listener on both handles.
       d3.selectAll('rect.handle').call(d3.drag().on("drag end", dragHandler, dragEnd));
+
+      var dragRangeRect = function () {
+        var displacement = d3.event.dx;
+        var newPos = parseInt(d3.select(this).attr('x'))+displacement;
+        var length = parseInt(d3.select(this).attr('width'));
+        // Get initWidth from the background opaque rectangle.
+        var initWidth = timelineArea.attr('width');
+
+        // Enforce bounds
+        if (newPos>= 0 && newPos+length <= initWidth) {
+
+          var handle1 = $('rect.handle').first();
+          var handle2 = $('rect.handle').last();
+
+          handle1.attr('x', parseInt(handle1.attr('x'))+displacement);
+          handle2.attr('x', parseInt(handle2.attr('x'))+displacement);
+
+          d3.select(this).attr('x', newPos);
+        }
+      }
+
+      rangeRect.call(d3.drag().on("drag", dragRangeRect));
     },
 
     dataRequest: function (symbol) {
