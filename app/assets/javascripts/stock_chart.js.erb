@@ -659,11 +659,18 @@
     },
 
     updateChart: function () {
-      this.mainGraphs.remove();
-      this.mainGraphs = this.svgBody.append('g').attr('class', 'mainGraphs')
+      var newTime = new Date();
+
+      // Update chart only if it has never been updated before or it's been 200ms since last update
+      if (this.lastUpdate === undefined || (newTime-this.lastUpdate > 200)) {
+        this.lastUpdate = newTime;
+
+        this.mainGraphs.remove();
+        this.mainGraphs = this.svgBody.append('g').attr('class', 'mainGraphs')
         .datum(this.graphData)
 
-      this.createChart();
+        this.createChart();
+      }
     },
 
     updateData: function (stockData, req) {
