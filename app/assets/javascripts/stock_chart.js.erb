@@ -577,6 +577,7 @@
           handle2.attr('x', parseInt(handle2.attr('x'))+displacement);
 
           d3.select(this).attr('x', newPos);
+          dragEnd();
         }
       }
 
