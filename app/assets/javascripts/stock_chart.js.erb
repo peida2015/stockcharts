@@ -585,12 +585,22 @@
     },
 
     dataRequest: function (symbol) {
-      //Remove keyup listener
-      d3.select(document).on("keyup", null);
-      d3.selectAll('.focused').classed('focused', false);
+      if (firebase.auth().currentUser) {
+        //Remove keyup listener
+        d3.select(document).on("keyup", null);
+        d3.selectAll('.focused').classed('focused', false);
 
-      window.callbacks.xhrReq(this.req.id_token, symbol);
-      console.log("dataRequest "+symbol);
+        window.callbacks.xhrReq(this.req.id_token, symbol);
+        console.log("dataRequest "+symbol);
+      } else {
+        var flashText = $('<span>').text('Sign in to lookup another symbol').addClass('flash').prependTo('body').fadeIn(2000).delay(2000).fadeOut();
+
+        var remov = function () {
+          flashText.remove();
+        };
+        // Wait until flash text finished fading effects before removal.
+        setTimeout(remov, 4000);
+      }
     },
 
     drawChartTypeSelector: function () {
