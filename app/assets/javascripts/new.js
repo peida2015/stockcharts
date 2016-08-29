@@ -44,10 +44,18 @@
 
   window.callbacks.signBackIn = function () {
     console.log("signBackIn");
-      // gapi.auth2.getAuthInstance().signIn({ "prompt": "login" });
       var googleUser = gapi.auth2.getAuthInstance().currentUser.get();
       onSignIn(googleUser);
     };
+  window.callbacks.tryOut = function () {
+    // "limited" is for app trial, only the symbol GOOG can be requested.
+    window.callbacks.xhrReq("limited");
+    // Sets a 5 minute timer to reload(exit the application).
+    window.setTimeout(function () {
+      console.log('reload');
+      location.reload();
+    }, 300000);
+  }
 })();
 
 
@@ -83,7 +91,7 @@ function onSignIn (googleUser) {
       console.log('signed in FB');
     };
 
-    window.callbacks.xhrReq(id_token);
+    // window.callbacks.xhrReq(id_token);
 
   });
 };
