@@ -47,8 +47,13 @@ img.icon {
   background-color: lightblue;
 }
 
+.demo:hover {
+  border: 2px #b3d5f7 solid;
+  border-style: groove;
+}
+
 .trial-text {
-  color: #fff;
+  color: darkcyan;
   font-weight: 700;
   // Vertically center text within button.
   position: relative;
