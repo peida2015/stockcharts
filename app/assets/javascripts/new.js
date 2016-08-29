@@ -47,6 +47,7 @@
       var googleUser = gapi.auth2.getAuthInstance().currentUser.get();
       onSignIn(googleUser);
     };
+
   window.callbacks.tryOut = function () {
     // "limited" is for app trial, only the symbol GOOG can be requested.
     window.callbacks.xhrReq("limited");
