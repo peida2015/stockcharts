@@ -593,7 +593,7 @@
         window.callbacks.xhrReq(this.req.id_token, symbol);
         console.log("dataRequest "+symbol);
       } else {
-        var flashText = $('<span>').text('Sign in to lookup another symbol').addClass('flash').prependTo('body').fadeIn(2000).delay(2000).fadeOut();
+        var flashText = $('<div>').text('Sign in to lookup another symbol').addClass('flash').addClass('centered').prependTo('body').fadeIn(2000).delay(2000).fadeOut();
 
         var remov = function () {
           flashText.remove();

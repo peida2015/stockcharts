@@ -57,8 +57,10 @@ img.icon {
 
 /* Flash text*/
 .flash {
-  left:50%;
-  top: 13%;
+  left: 50%;
+  top: 14%;
+  /* the width of the text is 204px; change if needed */
+  margin-left: -102px;
   position: absolute;
   background-color: yellow;
 }
