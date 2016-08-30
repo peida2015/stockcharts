@@ -1,10 +1,3 @@
-// .header {
-//   margin: 0 auto;
-//   width: 100%;
-//   height: 100px;
-//   position: fixed;
-// }
-
 nav {
   background-color: #B0C4DE;
 }
@@ -12,19 +5,19 @@ nav {
 .top-margin {
   margin-top: 5%;
 }
-//
+
 .gsi {
   text-align: center;
   font-size: 28px;
   color: #47746F;
   font-family: courier;
 }
-//
+
 .centered {
   // "-moz-min-content" for Mozilla FireFox and "fit-content" for Google Chrome.center the Gooogle Sign-in button.
   margin-left: auto;
   margin-right: auto;
-  width: -moz-min-content;
+  width: -moz-fit-content;
   width: fit-content;
 }
 
@@ -52,6 +45,7 @@ img.icon {
   border-style: groove;
 }
 
+/* Demo button text */
 .trial-text {
   color: darkcyan;
   font-weight: 700;
@@ -67,4 +61,13 @@ img.icon {
   top: 13%;
   position: absolute;
   background-color: yellow;
+}
+
+/* Timer */
+span.timer {
+  color: black;
+  background: yellow;
+  position: fixed;
+  bottom: 0;
+  right: 0;
 }

@@ -51,11 +51,24 @@
   window.callbacks.tryOut = function () {
     // "limited" is for app trial, only the symbol GOOG can be requested.
     window.callbacks.xhrReq("limited");
+    var timer = d3.select('body').append('span').classed('timer', true);
+
+    var startTime = new Date();
     // Sets a 5 minute timer to reload(exit the application).
     window.setTimeout(function () {
       console.log('reload');
+      timer.remove();
+      window.clearInterval(eachSec);
       location.reload();
-    }, 300000);
+    }, 300000, timer);
+
+    var eachSec = window.setInterval(function () {
+      var timeLeft = 300000 - (new Date() - startTime);
+      var minLeft = Math.floor(timeLeft/60000);
+      var secLeft = Math.floor(timeLeft%60000/1000);
+      if (secLeft < 10) secLeft = "0"+secLeft;
+      timer.text("Time Left: "+minLeft+":"+secLeft);
+    }, 1000, startTime, timer);
   }
 })();
 
@@ -92,7 +105,7 @@ function onSignIn (googleUser) {
       console.log('signed in FB');
     };
 
-    // window.callbacks.xhrReq(id_token);
+    window.callbacks.xhrReq(id_token);
 
   });
 };
