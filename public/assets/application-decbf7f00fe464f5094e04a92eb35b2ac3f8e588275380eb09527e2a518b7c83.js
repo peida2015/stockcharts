@@ -14725,7 +14725,7 @@ return jQuery;
     window.callbacks = {};
   }
 
-  window.callbacks.xhrReq = function (id_token, symbol = "GOOG", startDate = "20130510", endDate = "20150401") {
+  window.callbacks.xhrReq = function (id_token = "limited", symbol = "GOOG", startDate = "20130510", endDate = "20150401") {
     var url = './stock_data';
     var method = 'POST';
     var xhr = new XMLHttpRequest();
@@ -14807,10 +14807,32 @@ return jQuery;
 
   window.callbacks.signBackIn = function () {
     console.log("signBackIn");
-      // gapi.auth2.getAuthInstance().signIn({ "prompt": "login" });
       var googleUser = gapi.auth2.getAuthInstance().currentUser.get();
       onSignIn(googleUser);
     };
+
+  window.callbacks.tryOut = function () {
+    // "limited" is for app trial, only the symbol GOOG can be requested.
+    window.callbacks.xhrReq("limited");
+    var timer = d3.select('body').append('span').classed('timer', true);
+
+    var startTime = new Date();
+    // Sets a 5 minute timer to reload(exit the application).
+    window.setTimeout(function () {
+      console.log('reload');
+      timer.remove();
+      window.clearInterval(eachSec);
+      location.reload();
+    }, 300000, timer);
+
+    var eachSec = window.setInterval(function () {
+      var timeLeft = 300000 - (new Date() - startTime);
+      var minLeft = Math.floor(timeLeft/60000);
+      var secLeft = Math.floor(timeLeft%60000/1000);
+      if (secLeft < 10) secLeft = "0"+secLeft;
+      timer.text("Time Left: "+minLeft+":"+secLeft);
+    }, 1000, startTime, timer);
+  }
 })();
 
 
@@ -14944,12 +14966,17 @@ function renderButton(signInCB = onSignIn) {
       for (var i = 0; i < this.stockData.length; i++) {
         var currDay = this.stockData[i].tradingDay;
 
-        if (i == 0 && currDay.getDay() !== 1) {
+        if (i === 0 && currDay.getDay() !== 1 && currDay.getDay() !== 2) {
           // Skip first week if first week does not have complete week data
           switch (currDay.getDay()) {
-            case 2: i += 3;
-            case 3: i += 2;
-            case 4: i += 1;
+            case 3:
+              i += 2;
+              break;
+            case 4:
+              i += 1;
+              break;
+            default:
+              break;
           }
           continue;
         };
@@ -14972,7 +14999,7 @@ function renderButton(signInCB = onSignIn) {
 
         // If Friday is missing, take Thursday as last day of the week. Ignore any week with more than two days missing.
         if (currDay.getDay() === 5 ||
-            (currDay.getDay() === 4 && this.stockData[i+1].tradingDay.getDay() !== 5)) {
+            (currDay.getDay() === 4 && (this.stockData[i+1] === undefined || this.stockData[i+1].tradingDay.getDay() !== 5))) {
           currWkClose = this.stockData[i].close;
           currWk["symbol"] = this.stockData[i].symbol;
           currWk["open"] = currWkOpen;
@@ -14983,13 +15010,18 @@ function renderButton(signInCB = onSignIn) {
           if (currWk["tradingDay"] === undefined) {
             if (currDay.getDay() === 5) {
               currWk["tradingDay"] = new Date(currDay-1000*60*60*24*4);
+              currWk["open"] = this.stockData[i-3].open;
             } else {
               currWk["tradingDay"] = new Date(currDay-1000*60*60*24*3);
+              currWk["open"] = this.stockData[i-2].open;
             }
           }
           this.weeklyData.push(currWk);
-          var currWkHigh = 0;
-          var currWkLow = Infinity;
+          currWkHigh = 0;
+          currWkLow = Infinity;
+          currWkOpen = null;
+          currWkClose = null;
+          currWkVol = 0;
           currWk = {};
         }
       }
@@ -15000,25 +15032,40 @@ function renderButton(signInCB = onSignIn) {
         this.graphData = this.weeklyData;
       } else {
         var data = this.getRangeData(this.stockData, startDate, endDate);
-        this.graphData = data.length <= 200 ? data : this.getRangeData(this.weeklyData, startDate, endDate);
+        this.graphData = data.length <= 150 ? data : this.getRangeData(this.weeklyData, startDate, endDate);
       }
 
     },
 
-    getRangeData: function (data, startDate, endDate) {
-      return data.filter(function (d) {
-        return (d.tradingDay > startDate && d.tradingDay < endDate)
-      });
+    getRangeData: function (data, startDate, endDate = null) {
+      if (endDate === null || endDate === undefined) {
+        var endIdx = data.length;
+      } else {
+        var endIdx = window.utilities.bsDate(data, endDate);
+      }
+
+      var startIdx = window.utilities.bsDate(data, startDate);
+
+      return data.slice(startIdx, endIdx);
     },
 
     drawAxes: function () {
-      var startDate = this.graphData[0].tradingDay;
-      var endDate = this.graphData[this.graphData.length-1].tradingDay;
+      var domain = [],
+          range = [],
+          dataCount = this.graphData.length,
+          axisLength = this.width-2*this.xPadding,
+          unitLength = axisLength/dataCount;
+
+      // Use only the days in tradingDay's for a scale
+      for (var i = 0; i < dataCount; i++) {
+        domain.push(this.graphData[i].tradingDay);
+        range.push(i*unitLength);
+      };
 
       // Create axis from scaleTime with preset domain and range;
       this.xScale = d3.scaleTime()
-        .domain([startDate, endDate])
-        .range([0, this.width - 2*this.xPadding]);
+        .domain(domain)
+        .range(range);
 
       var xAxis = d3.axisBottom(this.xScale);
 
@@ -15032,7 +15079,7 @@ function renderButton(signInCB = onSignIn) {
       var max = -Infinity;
       var min = Infinity;
 
-      for (var idx = 0; idx < this.graphData.length; idx++) {
+      for (var idx = 0; idx < dataCount; idx++) {
         if (this.graphData[idx].high > max) {
             max = this.graphData[idx].high;
         };
@@ -15090,6 +15137,53 @@ function renderButton(signInCB = onSignIn) {
       return lineDrawn;
     },
 
+    drawCandlesticks: function () {
+      var candlesticks = this.mainGraphs.append('g')
+        .attr('class', 'candlesticks')
+        .attr('transform', 'translate('+this.xPadding+', '+this.yPadding+')')
+        .selectAll('.candles')
+        .data(this.graphData).enter();
+
+      var that = this;
+
+      var sticks = candlesticks.append('line')
+        .classed('sticks', true)
+        .attr('x1', function (d) {
+          return that.xScale(d.tradingDay);
+        })
+        .attr('x2', function (d) {
+          return that.xScale(d.tradingDay);
+        })
+        .attr('y1', function (d) {
+          return that.yScale(d.high);
+        })
+        .attr('y2', function (d) {
+          return that.yScale(d.low);
+        });
+
+      var length = this.width-2*this.xPadding;
+      var unitWidth = length/this.graphData.length;
+
+      var candles = candlesticks.append('rect')
+        .attr('class', function (d) {
+          return d.close > d.open ? "gain" : "loss";
+        })
+        .attr('x', function (d) {
+          var stickPos = that.xScale(d.tradingDay)
+          return unitWidth > 12 ? stickPos-6 : stickPos-unitWidth/2;
+        })
+        .attr('y', function (d) {
+          var higherPoint = d.open > d.close ? d.open : d.close;
+          return that.yScale(higherPoint);
+        })
+        .attr('width', function(d) {
+          return unitWidth > 12 ? 12 : unitWidth;
+        })
+        .attr('height', function (d) {
+          return Math.abs(that.yScale(d.close) - that.yScale(d.open));
+        });
+    },
+
     drawPricesBox: function (line) {
       var box = line.append('g')
                 .attr('class','box');
@@ -15117,11 +15211,9 @@ function renderButton(signInCB = onSignIn) {
       var tDay = arguments[7];
 
       var currDate = this.xScale.invert(eventCoor[0]-100);
+      var currIdx = window.utilities.bsDate(this.stockData, currDate);
 
-      var currVal = this.stockData.find(function (item) {
-        return (
-          item.tradingDay.getDate() === currDate.getDate() && item.tradingDay.getMonth() === currDate.getMonth() && item.tradingDay.getFullYear() === currDate.getFullYear());
-      });
+      var currVal = this.stockData[currIdx];
 
       if (currVal !== undefined) {
         rect
@@ -15237,10 +15329,17 @@ function renderButton(signInCB = onSignIn) {
         .attr('transform', 'translate('+that.width/2+','+that.yPadding/2+')')
         .attr('class', 'symbol');
 
+      var fadeInText = function () {
+        d3.select('text.teach').transition().duration(3000)
+          .style("opacity", 1)
+          .transition().duration(1000)
+          .style("opacity", 0);
+      };
+
       symb.append('text')
         .text(function (d) {
           return  d[0].symbol;
-        });
+        }).on('mouseover', fadeInText);
 
       var bgColor = symb.insert('rect', ":first-child")
         .attr('x', 0)
@@ -15269,6 +15368,18 @@ function renderButton(signInCB = onSignIn) {
           });
         });
 
+      var data = that.graphData;
+      var change = (data[data.length-1].close - data[0].open)/data[0].open;
+
+      symb.append('text').attr('class', change >= 0 ? 'pos' : 'neg')
+        .attr('x', 70).text(d3.format("+.2%")(change));
+
+      symb.append('text').attr('class', 'teach')
+      .text('Click and type SYMBOL when yellow. Hit ENTER.')
+      .attr('y', 30);
+
+      fadeInText();
+
     },
 
     drawTimeline: function () {
@@ -15286,7 +15397,7 @@ function renderButton(signInCB = onSignIn) {
         .attr('class', 'timeline')
         .attr('transform', 'translate('+ this.xPadding+', '+(this.height-20)+')')
 
-      timeline.append('rect')
+      var timelineArea = timeline.append('rect')
       .attr('class', 'timelineArea')
       .attr('width', this.width-2*this.xPadding)
       .attr('height', 20);
@@ -15320,9 +15431,9 @@ function renderButton(signInCB = onSignIn) {
         var el = d3.select(this);
         var rangeRect = d3.select('rect.timeRange');
         var initPos = parseInt(el.attr('x'));
-        var displacement = event.movementX;
-        // Get initWidth from the background opaque rectangle.
-        var initWidth = d3.select('rect.timelineArea').attr('width');
+        var displacement = d3.event.dx;
+        // Get initWidth from the background opaque rectangle 'timelineArea'.
+        var initWidth = timelineArea.attr('width');
 
         if ($('rect.handle').last().attr('x') === el.attr('x')) {
           var otherHandlePos = $('rect.handle').first().attr('x')
@@ -15351,7 +15462,6 @@ function renderButton(signInCB = onSignIn) {
       };
 
       var dragEnd = function () {
-        // debugger
         var xScale = arguments[0];
         var rangeRect = $('rect.timeRange');
         var leftEnd = parseInt(rangeRect.attr('x'));
@@ -15364,32 +15474,128 @@ function renderButton(signInCB = onSignIn) {
 
       // Put a drag listener on both handles.
       d3.selectAll('rect.handle').call(d3.drag().on("drag end", dragHandler, dragEnd));
+
+      var dragRangeRect = function () {
+        var displacement = d3.event.dx;
+        var newPos = parseInt(d3.select(this).attr('x'))+displacement;
+        var length = parseInt(d3.select(this).attr('width'));
+        // Get initWidth from the background opaque rectangle.
+        var initWidth = timelineArea.attr('width');
+
+        // Enforce bounds
+        if (newPos>= 0 && newPos+length <= initWidth) {
+
+          var handle1 = $('rect.handle').first();
+          var handle2 = $('rect.handle').last();
+
+          handle1.attr('x', parseInt(handle1.attr('x'))+displacement);
+          handle2.attr('x', parseInt(handle2.attr('x'))+displacement);
+
+          d3.select(this).attr('x', newPos);
+          dragEnd();
+        }
+      }
+
+      rangeRect.call(d3.drag().on("drag", dragRangeRect));
     },
 
     dataRequest: function (symbol) {
-      //Remove keyup listener
-      d3.select(document).on("keyup", null);
-      d3.selectAll('.focused').classed('focused', false);
+      if (firebase.auth().currentUser) {
+        //Remove keyup listener
+        d3.select(document).on("keyup", null);
+        d3.selectAll('.focused').classed('focused', false);
 
-      window.callbacks.xhrReq(this.req.id_token, symbol);
-      console.log("dataRequest "+symbol);
+        window.callbacks.xhrReq(this.req.id_token, symbol);
+        console.log("dataRequest "+symbol);
+      } else {
+        var flashText = $('<div>').text('Sign in to lookup another symbol').addClass('flash').addClass('centered').prependTo('body').fadeIn(2000).delay(2000).fadeOut();
+
+        var remov = function () {
+          flashText.remove();
+        };
+        // Wait until flash text finished fading effects before removal.
+        setTimeout(remov, 4000);
+      }
+    },
+
+    drawChartTypeSelector: function () {
+      var chartIcons = this.svgBody.append('g').attr('class', 'chartIcons');
+
+      var lineIcon = chartIcons.append('image')
+        .attr('class', 'lg-icon')
+        .attr('x', '10')
+        .attr('y', '10')
+        .attr('height', 25)
+        .attr('width', 25)
+        .attr('xlink:href', "/assets/lg-icon-db3d25b081779e63f975b125b2c06e0ee00e8dd1ce72a53c13de80bfbf42a219.png");
+
+      var candlestickIcon = chartIcons.append('image')
+        .attr('class', 'cs-icon')
+        .attr('x', '50')
+        .attr('y', '10')
+        .attr('height', 25)
+        .attr('width', 25)
+        .attr('xlink:href', "/assets/cs-icon-a2b3f8c118211fe958eea02af30928a43d7df89a6c3ca2100e09a11acaf81ce9.png");
+
+      var that = this;
+
+      var clickHandler = function () {
+        var el = d3.select(this);
+        if (!el.classed('selected')) {
+          d3.select('rect.icon-bg.selected').classed('selected', false);
+          el.classed('selected', true);
+
+          parseInt(el.attr('x')) === 10 ? that.chartType = "line" : that.chartType = "candlesticks";
+
+          that.updateChart();
+        }
+      };
+
+      var lineIconBg = chartIcons.append('rect')
+        .classed('icon-bg', true)
+        .attr('x', 10)
+        .attr('y', 10)
+        .attr('height', 25)
+        .attr('width', 25)
+        .on('click', clickHandler);
+
+      var csIconBg = chartIcons.append('rect')
+        .classed('icon-bg', true)
+        .classed('selected', true)
+        .attr('x', 50)
+        .attr('y', 10)
+        .attr('height', 25)
+        .attr('width', 25)
+        .on('click', clickHandler);
+
     },
 
     createChart: function () {
       this.drawAxes();
-      var line = this.drawLineGraph();
-      this.drawPricesBox(line);
+      if (this.chartType === "candlesticks") {
+        this.drawCandlesticks();
+      } else {
+        var line = this.drawLineGraph();
+        this.drawPricesBox(line);
+      }
       this.drawVolAxes();
       this.drawVolBars();
       this.drawSymbol();
     },
 
     updateChart: function () {
-      this.mainGraphs.remove();
-      this.mainGraphs = this.svgBody.append('g').attr('class', 'mainGraphs')
+      var newTime = new Date();
+
+      // Update chart only if it has never been updated before or it's been 200ms since last update
+      if (this.lastUpdate === undefined || (newTime-this.lastUpdate > 200)) {
+        this.lastUpdate = newTime;
+
+        this.mainGraphs.remove();
+        this.mainGraphs = this.svgBody.append('g').attr('class', 'mainGraphs')
         .datum(this.graphData)
 
-      this.createChart();
+        this.createChart();
+      }
     },
 
     updateData: function (stockData, req) {
@@ -15410,6 +15616,7 @@ function renderButton(signInCB = onSignIn) {
       this.setSVG();
       this.createChart();
       this.drawTimeline();
+      this.drawChartTypeSelector();
     }
 
   }
@@ -15419,6 +15626,7 @@ function renderButton(signInCB = onSignIn) {
       var graph = window._GraphBuilder.singleInstance;
       if (graph === undefined) {
         graph = window._GraphBuilder.singleInstance = new _GraphBuilder.GraphBuilder(data.results, data.request, 600, $('body').width());
+        graph.chartType = "candlesticks";
         graph.dataPreparation(data.results);
         graph.drawSVG();
       } else {
@@ -15427,6 +15635,27 @@ function renderButton(signInCB = onSignIn) {
     }
 
   }
+
+  window.utilities.bsDate = function (data, date) {
+      // A number is returned for any date input.
+      if (data.length <= 1) { return 0;  }
+
+      var oneDay = 1000*60*60*24;
+
+      var midIdx = Math.floor(data.length/2);
+
+      var timeDiff = data[midIdx].tradingDay - date;
+
+      // There is no exact Datetime match, match tolerance is oneDay.
+      if (Math.abs(timeDiff) < oneDay) { return midIdx; }
+
+      if (timeDiff > 0) {
+        return window.utilities.bsDate(data.slice(0, midIdx), date);
+      } else {
+        return midIdx + window.utilities.bsDate(data.slice(midIdx, data.length), date)
+      }
+
+    }
 
 })();
 (function() {
