@@ -129,7 +129,7 @@
         this.graphData = this.weeklyData;
       } else {
         var data = this.getRangeData(this.stockData, startDate, endDate);
-        this.graphData = data.length <= 150 ? data : this.getRangeData(this.weeklyData, startDate, endDate);
+        this.graphData = data.length <= 150 || this.chartType === "line" ? data : this.getRangeData(this.weeklyData, startDate, endDate);
       }
 
     },
