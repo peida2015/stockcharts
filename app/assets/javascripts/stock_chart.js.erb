@@ -147,13 +147,22 @@
     },
 
     drawAxes: function () {
-      var startDate = this.graphData[0].tradingDay;
-      var endDate = this.graphData[this.graphData.length-1].tradingDay;
+      var domain = [],
+          range = [],
+          dataCount = this.graphData.length,
+          axisLength = this.width-2*this.xPadding,
+          unitLength = axisLength/dataCount;
+
+      // Use only the days in tradingDay's for a scale
+      for (var i = 0; i < dataCount; i++) {
+        domain.push(this.graphData[i].tradingDay);
+        range.push(i*unitLength);
+      };
 
       // Create axis from scaleTime with preset domain and range;
       this.xScale = d3.scaleTime()
-        .domain([startDate, endDate])
-        .range([0, this.width - 2*this.xPadding]);
+        .domain(domain)
+        .range(range);
 
       var xAxis = d3.axisBottom(this.xScale);
 
@@ -167,7 +176,7 @@
       var max = -Infinity;
       var min = Infinity;
 
-      for (var idx = 0; idx < this.graphData.length; idx++) {
+      for (var idx = 0; idx < dataCount; idx++) {
         if (this.graphData[idx].high > max) {
             max = this.graphData[idx].high;
         };
@@ -247,7 +256,10 @@
         })
         .attr('y2', function (d) {
           return that.yScale(d.low);
-        })
+        });
+
+      var length = this.width-2*this.xPadding;
+      var unitWidth = length/this.graphData.length;
 
       var candles = candlesticks.append('rect')
         .attr('class', function (d) {
@@ -255,14 +267,14 @@
         })
         .attr('x', function (d) {
           var stickPos = that.xScale(d.tradingDay)
-          return that.graphData.length > 90 ? stickPos-3 : stickPos-4;
+          return unitWidth > 12 ? stickPos-6 : stickPos-unitWidth/2;
         })
         .attr('y', function (d) {
           var higherPoint = d.open > d.close ? d.open : d.close;
           return that.yScale(higherPoint);
         })
         .attr('width', function(d) {
-          return that.graphData.length > 90 ? 6 : 8
+          return unitWidth > 12 ? 12 : unitWidth;
         })
         .attr('height', function (d) {
           return Math.abs(that.yScale(d.close) - that.yScale(d.open));
