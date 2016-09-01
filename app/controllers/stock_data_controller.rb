@@ -17,7 +17,7 @@ class StockDataController < ApplicationController
       end
     end
 
-    # Parse response and attach original request params to res  
+    # Parse response and attach original request params to res
     res = JSON.parse(res)
     res["request"] = {}
     res["request"]["id_token"] = id_token

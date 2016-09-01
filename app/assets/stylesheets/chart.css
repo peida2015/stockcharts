@@ -126,9 +126,10 @@ rect.handle:hover {
 
 /* Chart Selector icons */
 rect.icon-bg {
-  fill: gray;
+  fill: white;
   stroke: black;
-  opacity: 0.2;
+  opacity: 0.6;
+  stroke-width: 2px;
 }
 
 rect.icon-bg.selected {
@@ -153,4 +154,18 @@ text.teach {
   stroke-width: 0.2;
   text-anchor: middle;
   opacity: 0;
+}
+
+text.volText {
+  opacity: 0;
+  animation-name: fadeOut;
+  animation-duration: 4s;
+}
+
+
+/*Animations*/
+@keyframes fadeOut {
+  0% { opacity: 0; }
+  75% { opacity: 1; }
+  100% { opacity: 0; display:none; }
 }
