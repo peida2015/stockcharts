@@ -8804,17 +8804,17 @@ button.close {
     display: none !important;
   }
 }
-/* line 8, /home/pdguo/Documents/apps_proj/stock_data_api_wrapper/app/assets/stylesheets/custom.scss */
+/* line 1, /home/pdguo/Documents/apps_proj/stock_data_api_wrapper/app/assets/stylesheets/custom.scss */
 nav {
   background-color: #B0C4DE;
 }
 
-/* line 12, /home/pdguo/Documents/apps_proj/stock_data_api_wrapper/app/assets/stylesheets/custom.scss */
+/* line 5, /home/pdguo/Documents/apps_proj/stock_data_api_wrapper/app/assets/stylesheets/custom.scss */
 .top-margin {
   margin-top: 5%;
 }
 
-/* line 16, /home/pdguo/Documents/apps_proj/stock_data_api_wrapper/app/assets/stylesheets/custom.scss */
+/* line 9, /home/pdguo/Documents/apps_proj/stock_data_api_wrapper/app/assets/stylesheets/custom.scss */
 .gsi {
   text-align: center;
   font-size: 28px;
@@ -8822,25 +8822,71 @@ nav {
   font-family: courier;
 }
 
-/* line 23, /home/pdguo/Documents/apps_proj/stock_data_api_wrapper/app/assets/stylesheets/custom.scss */
+/* line 16, /home/pdguo/Documents/apps_proj/stock_data_api_wrapper/app/assets/stylesheets/custom.scss */
 .centered {
   margin-left: auto;
   margin-right: auto;
-  width: -moz-min-content;
+  width: -moz-fit-content;
   width: fit-content;
 }
 
-/* line 31, /home/pdguo/Documents/apps_proj/stock_data_api_wrapper/app/assets/stylesheets/custom.scss */
+/* line 24, /home/pdguo/Documents/apps_proj/stock_data_api_wrapper/app/assets/stylesheets/custom.scss */
 img {
   margin-top: 30px;
   height: 300px;
   margin-bottom: 30px;
 }
 
-/* line 37, /home/pdguo/Documents/apps_proj/stock_data_api_wrapper/app/assets/stylesheets/custom.scss */
+/* line 30, /home/pdguo/Documents/apps_proj/stock_data_api_wrapper/app/assets/stylesheets/custom.scss */
 img.icon {
   margin: 0 auto;
   height: 100%;
+}
+
+/* line 36, /home/pdguo/Documents/apps_proj/stock_data_api_wrapper/app/assets/stylesheets/custom.scss */
+.demo {
+  width: 180px;
+  height: 50px;
+  margin-top: 10px;
+  background-color: lightblue;
+}
+
+/* line 43, /home/pdguo/Documents/apps_proj/stock_data_api_wrapper/app/assets/stylesheets/custom.scss */
+.demo:hover {
+  border: 2px #b3d5f7 solid;
+  border-style: groove;
+  cursor: pointer;
+}
+
+/* Demo button text */
+/* line 50, /home/pdguo/Documents/apps_proj/stock_data_api_wrapper/app/assets/stylesheets/custom.scss */
+.trial-text {
+  color: darkcyan;
+  font-weight: 700;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Flash text*/
+/* line 60, /home/pdguo/Documents/apps_proj/stock_data_api_wrapper/app/assets/stylesheets/custom.scss */
+.flash {
+  left: 50%;
+  top: 14%;
+  /* the width of the text is 204px; change if needed */
+  margin-left: -102px;
+  position: absolute;
+  background-color: yellow;
+}
+
+/* Timer */
+/* line 70, /home/pdguo/Documents/apps_proj/stock_data_api_wrapper/app/assets/stylesheets/custom.scss */
+span.timer {
+  color: black;
+  background: yellow;
+  position: fixed;
+  bottom: 0;
+  right: 0;
 }
 
 /* Main graph axes */
@@ -8987,12 +9033,13 @@ rect.handle:hover {
 /* Chart Selector icons */
 /* line 128, /home/pdguo/Documents/apps_proj/stock_data_api_wrapper/app/assets/stylesheets/chart.css */
 rect.icon-bg {
-  fill: gray;
+  fill: white;
   stroke: black;
-  opacity: 0.2;
+  opacity: 0.6;
+  stroke-width: 2px;
 }
 
-/* line 134, /home/pdguo/Documents/apps_proj/stock_data_api_wrapper/app/assets/stylesheets/chart.css */
+/* line 135, /home/pdguo/Documents/apps_proj/stock_data_api_wrapper/app/assets/stylesheets/chart.css */
 rect.icon-bg.selected {
   fill: none;
   stroke: none;
@@ -9000,22 +9047,43 @@ rect.icon-bg.selected {
 }
 
 /* Change indicator */
-/* line 141, /home/pdguo/Documents/apps_proj/stock_data_api_wrapper/app/assets/stylesheets/chart.css */
+/* line 142, /home/pdguo/Documents/apps_proj/stock_data_api_wrapper/app/assets/stylesheets/chart.css */
 text.pos {
   fill: lightgreen;
 }
 
-/* line 145, /home/pdguo/Documents/apps_proj/stock_data_api_wrapper/app/assets/stylesheets/chart.css */
+/* line 146, /home/pdguo/Documents/apps_proj/stock_data_api_wrapper/app/assets/stylesheets/chart.css */
 text.neg {
   fill: red;
 }
 
 /* Instruction text */
-/* line 150, /home/pdguo/Documents/apps_proj/stock_data_api_wrapper/app/assets/stylesheets/chart.css */
+/* line 151, /home/pdguo/Documents/apps_proj/stock_data_api_wrapper/app/assets/stylesheets/chart.css */
 text.teach {
   font-size: 12px;
   fill: black;
   stroke-width: 0.2;
   text-anchor: middle;
   opacity: 0;
+}
+
+/* line 159, /home/pdguo/Documents/apps_proj/stock_data_api_wrapper/app/assets/stylesheets/chart.css */
+text.volText {
+  opacity: 0;
+  animation-name: fadeOut;
+  animation-duration: 4s;
+}
+
+/*Animations*/
+@keyframes fadeOut {
+  0% {
+    opacity: 0;
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    display: none;
+  }
 }

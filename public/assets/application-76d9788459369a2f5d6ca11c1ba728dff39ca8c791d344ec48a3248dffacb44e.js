@@ -14725,7 +14725,7 @@ return jQuery;
     window.callbacks = {};
   }
 
-  window.callbacks.xhrReq = function (id_token, symbol = "GOOG", startDate = "20130510", endDate = "20150401") {
+  window.callbacks.xhrReq = function (id_token = "limited", symbol = "GOOG", startDate = "20130510", endDate = "20150401") {
     var url = './stock_data';
     var method = 'POST';
     var xhr = new XMLHttpRequest();
@@ -14807,10 +14807,32 @@ return jQuery;
 
   window.callbacks.signBackIn = function () {
     console.log("signBackIn");
-      // gapi.auth2.getAuthInstance().signIn({ "prompt": "login" });
       var googleUser = gapi.auth2.getAuthInstance().currentUser.get();
       onSignIn(googleUser);
     };
+
+  window.callbacks.tryOut = function () {
+    // "limited" is for app trial, only the symbol GOOG can be requested.
+    window.callbacks.xhrReq("limited");
+    var timer = d3.select('body').append('span').classed('timer', true);
+
+    var startTime = new Date();
+    // Sets a 5 minute timer to reload(exit the application).
+    window.setTimeout(function () {
+      console.log('reload');
+      timer.remove();
+      window.clearInterval(eachSec);
+      location.reload();
+    }, 300000, timer);
+
+    var eachSec = window.setInterval(function () {
+      var timeLeft = 300000 - (new Date() - startTime);
+      var minLeft = Math.floor(timeLeft/60000);
+      var secLeft = Math.floor(timeLeft%60000/1000);
+      if (secLeft < 10) secLeft = "0"+secLeft;
+      timer.text("Time Left: "+minLeft+":"+secLeft);
+    }, 1000, startTime, timer);
+  }
 })();
 
 
@@ -14938,7 +14960,7 @@ function renderButton(signInCB = onSignIn) {
       var currWkLow = Infinity;
       var currWkOpen;
       var currWkClose;
-      var currWkVol;
+      var currWkVol = 0;
       var currWk = { };
 
       for (var i = 0; i < this.stockData.length; i++) {
@@ -14957,15 +14979,15 @@ function renderButton(signInCB = onSignIn) {
               break;
           }
           continue;
+        } else {
         };
 
         if (currDay.getDay() === 1) {
           currWkOpen = this.stockData[i].open;
           currWk["tradingDay"] = currDay;
-          currWkVol = this.stockData[i].volume;
-        } else {
-          currWkVol += this.stockData[i].volume;
         }
+
+        currWkVol += this.stockData[i].volume;
 
         if (this.stockData[i].high > currWkHigh) {
           currWkHigh = this.stockData[i].high;
@@ -15010,7 +15032,7 @@ function renderButton(signInCB = onSignIn) {
         this.graphData = this.weeklyData;
       } else {
         var data = this.getRangeData(this.stockData, startDate, endDate);
-        this.graphData = data.length <= 150 ? data : this.getRangeData(this.weeklyData, startDate, endDate);
+        this.graphData = data.length <= 150 || this.chartType === "line" ? data : this.getRangeData(this.weeklyData, startDate, endDate);
       }
 
     },
@@ -15028,13 +15050,22 @@ function renderButton(signInCB = onSignIn) {
     },
 
     drawAxes: function () {
-      var startDate = this.graphData[0].tradingDay;
-      var endDate = this.graphData[this.graphData.length-1].tradingDay;
+      var domain = [],
+          range = [],
+          dataCount = this.graphData.length,
+          axisLength = this.width-2*this.xPadding,
+          unitLength = axisLength/dataCount;
+
+      // Use only the days in tradingDay's for a scale
+      for (var i = 0; i < dataCount; i++) {
+        domain.push(this.graphData[i].tradingDay);
+        range.push(i*unitLength);
+      };
 
       // Create axis from scaleTime with preset domain and range;
       this.xScale = d3.scaleTime()
-        .domain([startDate, endDate])
-        .range([0, this.width - 2*this.xPadding]);
+        .domain(domain)
+        .range(range);
 
       var xAxis = d3.axisBottom(this.xScale);
 
@@ -15048,7 +15079,7 @@ function renderButton(signInCB = onSignIn) {
       var max = -Infinity;
       var min = Infinity;
 
-      for (var idx = 0; idx < this.graphData.length; idx++) {
+      for (var idx = 0; idx < dataCount; idx++) {
         if (this.graphData[idx].high > max) {
             max = this.graphData[idx].high;
         };
@@ -15128,7 +15159,10 @@ function renderButton(signInCB = onSignIn) {
         })
         .attr('y2', function (d) {
           return that.yScale(d.low);
-        })
+        });
+
+      var length = this.width-2*this.xPadding;
+      var unitWidth = length/this.graphData.length;
 
       var candles = candlesticks.append('rect')
         .attr('class', function (d) {
@@ -15136,14 +15170,14 @@ function renderButton(signInCB = onSignIn) {
         })
         .attr('x', function (d) {
           var stickPos = that.xScale(d.tradingDay)
-          return that.graphData.length > 90 ? stickPos-3 : stickPos-4;
+          return unitWidth > 12 ? stickPos-6 : stickPos-unitWidth/2;
         })
         .attr('y', function (d) {
           var higherPoint = d.open > d.close ? d.open : d.close;
           return that.yScale(higherPoint);
         })
         .attr('width', function(d) {
-          return that.graphData.length > 90 ? 6 : 8
+          return unitWidth > 12 ? 12 : unitWidth;
         })
         .attr('height', function (d) {
           return Math.abs(that.yScale(d.close) - that.yScale(d.open));
@@ -15273,10 +15307,10 @@ function renderButton(signInCB = onSignIn) {
 
       var that = this;
 
-      barchart
+      var bars = barchart
         .append('line')
         .attr('y2', function (d) {
-          return -that.volYScale(d.volume);
+          return that.volYScale(d.volume)-1.3*that.yPadding;
         })
         .attr('x1', function (d) {
           return that.xScale(d.tradingDay);
@@ -15284,6 +15318,16 @@ function renderButton(signInCB = onSignIn) {
         .attr('x2', function (d) {
           return that.xScale(d.tradingDay);
         });
+
+      bars.on('mouseover', function (d) {
+        d3.select('.volText').remove();
+
+        d3.select('.volX').append('text')
+          .classed('volText', true)
+          .text("Vol: " + d3.format('.3s')(d.volume))
+          .attr('x', d3.select(this).attr('x1'))
+          .attr('y', -1.3*that.yPadding);
+      })
 
       barchart.exit().remove();
     },
@@ -15466,12 +15510,22 @@ function renderButton(signInCB = onSignIn) {
     },
 
     dataRequest: function (symbol) {
-      //Remove keyup listener
-      d3.select(document).on("keyup", null);
-      d3.selectAll('.focused').classed('focused', false);
+      if (firebase.auth().currentUser) {
+        //Remove keyup listener
+        d3.select(document).on("keyup", null);
+        d3.selectAll('.focused').classed('focused', false);
 
-      window.callbacks.xhrReq(this.req.id_token, symbol);
-      console.log("dataRequest "+symbol);
+        window.callbacks.xhrReq(this.req.id_token, symbol);
+        console.log("dataRequest "+symbol);
+      } else {
+        var flashText = $('<div>').text('Sign in to lookup another symbol').addClass('flash').addClass('centered').prependTo('body').fadeIn(2000).delay(2000).fadeOut();
+
+        var remov = function () {
+          flashText.remove();
+        };
+        // Wait until flash text finished fading effects before removal.
+        setTimeout(remov, 4000);
+      }
     },
 
     drawChartTypeSelector: function () {
@@ -15479,18 +15533,18 @@ function renderButton(signInCB = onSignIn) {
 
       var lineIcon = chartIcons.append('image')
         .attr('class', 'lg-icon')
-        .attr('x', '10')
-        .attr('y', '10')
-        .attr('height', 25)
-        .attr('width', 25)
+        .attr('x', '5')
+        .attr('y', '0')
+        .attr('height', '35')
+        .attr('width', '35')
         .attr('xlink:href', "/assets/lg-icon-db3d25b081779e63f975b125b2c06e0ee00e8dd1ce72a53c13de80bfbf42a219.png");
 
       var candlestickIcon = chartIcons.append('image')
         .attr('class', 'cs-icon')
         .attr('x', '50')
-        .attr('y', '10')
-        .attr('height', 25)
-        .attr('width', 25)
+        .attr('y', '0')
+        .attr('height', '35')
+        .attr('width', '35')
         .attr('xlink:href', "/assets/cs-icon-a2b3f8c118211fe958eea02af30928a43d7df89a6c3ca2100e09a11acaf81ce9.png");
 
       var that = this;
@@ -15501,7 +15555,7 @@ function renderButton(signInCB = onSignIn) {
           d3.select('rect.icon-bg.selected').classed('selected', false);
           el.classed('selected', true);
 
-          parseInt(el.attr('x')) === 10 ? that.chartType = "line" : that.chartType = "candlesticks";
+          parseInt(el.attr('x')) === 5 ? that.chartType = "line" : that.chartType = "candlesticks";
 
           that.updateChart();
         }
@@ -15509,19 +15563,19 @@ function renderButton(signInCB = onSignIn) {
 
       var lineIconBg = chartIcons.append('rect')
         .classed('icon-bg', true)
-        .attr('x', 10)
-        .attr('y', 10)
-        .attr('height', 25)
-        .attr('width', 25)
+        .attr('x', '5')
+        .attr('y', '0')
+        .attr('height', '35')
+        .attr('width', '35')
         .on('click', clickHandler);
 
       var csIconBg = chartIcons.append('rect')
         .classed('icon-bg', true)
         .classed('selected', true)
         .attr('x', 50)
-        .attr('y', 10)
-        .attr('height', 25)
-        .attr('width', 25)
+        .attr('y', 0)
+        .attr('height', 35)
+        .attr('width', 35)
         .on('click', clickHandler);
 
     },
