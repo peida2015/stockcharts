@@ -1,20 +1,18 @@
 "use strict";
 
-(function () {
-  document.onreadystatechange = function () {
-    if (document.readyState === 'complete') {
-
-      // Initialize Firebase
-      var config = {
-        apiKey: "AIzaSyDcwNKGkY22_SP4PQ1tUu8xOvkrfvuywFY",
-        authDomain: "voltaic-tooling-115723.firebaseapp.com",
-        databaseURL: "https://voltaic-tooling-115723.firebaseio.com",
-        storageBucket: "voltaic-tooling-115723.appspot.com",
-      };
-
-      firebase.initializeApp(config);
-    };
+$(document).ready(function () {
+  if (window.callbacks === undefined) {
+    window.callbacks = {};
   };
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyDcwNKGkY22_SP4PQ1tUu8xOvkrfvuywFY",
+    authDomain: "voltaic-tooling-115723.firebaseapp.com",
+    databaseURL: "https://voltaic-tooling-115723.firebaseio.com",
+    storageBucket: "voltaic-tooling-115723.appspot.com",
+  };
+
+  firebase.initializeApp(config);
 
   window.callbacks.toggleAppAuth = function () {
     if (firebase.auth().currentUser) {
@@ -69,13 +67,14 @@
       if (secLeft < 10) secLeft = "0"+secLeft;
       timer.text("Time Left: "+minLeft+":"+secLeft);
     }, 1000, startTime, timer);
-  }
-})();
+  };
+});
 
 
 
 function onSignIn (googleUser) {
   // We need to register an Observer on Firebase Auth to make sure auth is initialized.
+  console.log("onSignIn");
   var unsubscribe = firebase.auth().onAuthStateChanged(function(firebaseUser) {
     unsubscribe();
     // Check if we are already signed-in Firebase with the correct user.
