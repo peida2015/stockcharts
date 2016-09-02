@@ -4,7 +4,7 @@ class StockDataController < ApplicationController
     data = JSON.parse(params.keys[0])
     id_token = data["id_token"]
 
-    if id_token = "limited"
+    if id_token == "limited"
       data["symbol"] = "GOOG"
       res = request_query(data)
     else
@@ -31,6 +31,7 @@ class StockDataController < ApplicationController
 
   private
   def verify_id_token(id_token)
+    # Authentication
     client_id = ENV["google_app_id"]
 
     verifier = GoogleIDToken::Validator.new
@@ -40,14 +41,17 @@ class StockDataController < ApplicationController
   end
 
   def request_query(data)
-    url = URI("http://marketdata.websol.barchart.com/getHistory.json")
-    url.query = URI.encode_www_form({
-      key: ENV["barchart_api_key"],
-      symbol: data["symbol"],
-      type: data["type"],
-      startDate: data["startDate"],
-      endDate:data["endDate"]
-      })
-      res = Net::HTTP::get(url)
+    Rails.cache.fetch(data["symbol"], :expires_in => 12.hours) do
+      puts "API called"
+      url = URI("http://marketdata.websol.barchart.com/getHistory.json")
+      url.query = URI.encode_www_form({
+        key: ENV["barchart_api_key"],
+        symbol: data["symbol"],
+        type: data["type"],
+        startDate: data["startDate"],
+        endDate:data["endDate"]
+        })
+        res = Net::HTTP::get(url)
+    end
   end
 end
