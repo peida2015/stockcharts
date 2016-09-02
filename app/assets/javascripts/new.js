@@ -102,7 +102,7 @@ function onSignIn (googleUser) {
     var button = $('a:contains("Login")');
     if (button.length > 0) {
       button.text('Logout');
-      console.log('signed in FB');
+      console.log('signed in FireBase');
     };
 
     window.callbacks.xhrReq(id_token);

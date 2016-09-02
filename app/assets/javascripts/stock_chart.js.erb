@@ -436,25 +436,20 @@
         .attr('transform', 'translate('+that.width/2+','+that.yPadding/2+')')
         .attr('class', 'symbol');
 
-      var fadeInText = function () {
-        d3.select('text.teach').transition().duration(3000)
-          .style("opacity", 1)
-          .transition().duration(1000)
-          .style("opacity", 0);
-      };
 
       symb.append('text')
         .text(function (d) {
-          return  d[0].symbol;
-        }).on('mouseover', fadeInText);
+          return d[0].symbol;
+        })
+        .on('mouseover', fadeInText);
 
       var bgColor = symb.insert('rect', ":first-child")
         .attr('x', 0)
-        .attr('y', -symb.node().lastChild.getBBox().height+5)
-        .attr('width', symb.node().lastChild.getBBox().width)
-        .attr('height', symb.node().lastChild.getBBox().height);
+        .attr('y', -symb.select('text').node().getBBox().height+5)
+        .attr('width', symb.select('text').node().getBBox().width)
+        .attr('height', symb.select('text').node().getBBox().height);
 
-      symb.on("click", function (d) {
+      symb.on("click touchstart", function (d) {
           bgColor.classed("focused", true);
 
           var pressCounter = 0;
@@ -473,18 +468,43 @@
               that.dataRequest(symEl.text().toUpperCase().trim());
             }
           });
+
+          d3.select('.symbol image').on('click', function () {
+            var symEl = d3.select('.symbol text');
+            if (symEl.text().length !== 0) {
+              that.dataRequest(symEl.text().toUpperCase().trim());
+            };
+          })
         });
 
+      // Percent change
       var data = that.graphData;
       var change = (data[data.length-1].close - data[0].open)/data[0].open;
 
       symb.append('text').attr('class', change >= 0 ? 'pos' : 'neg')
         .attr('x', 70).text(d3.format("+.2%")(change));
 
-      symb.append('text').attr('class', 'teach')
-      .text('Click and type SYMBOL when yellow. Hit ENTER.')
-      .attr('y', 30);
+      symb.append('image').attr('class', "searchIcon").attr('x', -25)
+        .attr('y', -symb.select('text').node().getBBox().height+5)
+        .attr('height', '20')
+        .attr('width', '20')
+        .attr('xlink:href', "<%= image_url('search.png') %>");;
 
+      // Fade in animation for hint text.
+      var fadeInText = function () {
+        d3.select('text.teach').transition().duration(3000)
+        .style("opacity", 1)
+        .delay(1000)
+        .transition().duration(1000)
+        .style("opacity", 0);
+      };
+
+      // Hint text
+      symb.append('text').attr('class', 'teach')
+        .text('Click. Type SYMBOL when yellow. Hit ENTER.')
+        .attr('y', 30);
+
+      // Initial animation.
       fadeInText();
 
     },
@@ -606,25 +626,6 @@
       rangeRect.call(d3.drag().on("drag", dragRangeRect));
     },
 
-    dataRequest: function (symbol) {
-      if (firebase.auth().currentUser) {
-        //Remove keyup listener
-        d3.select(document).on("keyup", null);
-        d3.selectAll('.focused').classed('focused', false);
-
-        window.callbacks.xhrReq(this.req.id_token, symbol);
-        console.log("dataRequest "+symbol);
-      } else {
-        var flashText = $('<div>').text('Sign in to lookup another symbol').addClass('flash').addClass('centered').prependTo('body').fadeIn(2000).delay(2000).fadeOut();
-
-        var remov = function () {
-          flashText.remove();
-        };
-        // Wait until flash text finished fading effects before removal.
-        setTimeout(remov, 4000);
-      }
-    },
-
     drawChartTypeSelector: function () {
       var chartIcons = this.svgBody.append('g').attr('class', 'chartIcons');
 
@@ -675,6 +676,25 @@
         .attr('width', 35)
         .on('click', clickHandler);
 
+    },
+
+    dataRequest: function (symbol) {
+      if (firebase.auth().currentUser) {
+        //Remove keyup listener
+        d3.select(document).on("keyup", null);
+        d3.selectAll('.focused').classed('focused', false);
+
+        window.callbacks.xhrReq(this.req.id_token, symbol);
+        console.log("dataRequest "+symbol);
+      } else {
+        var flashText = $('<div>').text('Sign in to lookup another symbol').addClass('flash').addClass('centered').prependTo('body').fadeIn(2000).delay(2000).fadeOut();
+
+        var remov = function () {
+          flashText.remove();
+        };
+        // Wait until flash text finished fading effects before removal.
+        setTimeout(remov, 4000);
+      }
     },
 
     createChart: function () {

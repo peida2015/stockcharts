@@ -158,20 +158,24 @@ text.teach {
 
 text.volText {
   opacity: 0;
-  animation-name: fadeOut;
+  animation-name: fadeInOut;
   animation-duration: 4s;
+}
+
+.symbol image:hover {
+  cursor: pointer;
 }
 
 
 /*Animations*/
 
-@-webkit-keyframes fadeOut {
+@-webkit-keyframes fadeInOut {
   0% { opacity: 0; }
   75% { opacity: 1; }
   100% { opacity: 0; display:none; }
 }
 
-@keyframes fadeOut {
+@keyframes fadeInOut {
   0% { opacity: 0; }
   75% { opacity: 1; }
   100% { opacity: 0; display:none; }
