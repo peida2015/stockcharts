@@ -73,8 +73,8 @@ $(document).ready(function () {
 
 
 function onSignIn (googleUser) {
+  $('#spinner').modal();
   // We need to register an Observer on Firebase Auth to make sure auth is initialized.
-  console.log("onSignIn");
   var unsubscribe = firebase.auth().onAuthStateChanged(function(firebaseUser) {
     unsubscribe();
     // Check if we are already signed-in Firebase with the correct user.
