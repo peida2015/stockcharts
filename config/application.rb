@@ -22,6 +22,19 @@ module StockDataApiWrapper
 
     # Do not swallow errors in after_commit/after_rollback callbacks.
 
+    if ENV["REDISTOGO_URL"]
+      uri = URI.parse(ENV["REDISTOGO_URL"])
+
+      config.cache_store = [
+        :redis_store, {
+          :host => uri.host,
+          :port => uri.port,
+          :password => uri.password,
+          :namespace => "cache"
+        }
+      ]
+    end
+
     config.middleware.insert_before 0, "Rack::Cors" do
       allow do
         origins '*'

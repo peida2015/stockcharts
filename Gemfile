@@ -23,6 +23,16 @@ gem 'jbuilder', '~> 2.0'
 # bundle exec rake doc:rails generates the API under doc/api.
 gem 'sdoc', '~> 0.4.0', group: :doc
 
+gem 'bootstrap-sass', '~> 3.3.6'
+
+gem 'rack-cors', :require => 'rack/cors'
+gem 'google-id-token'
+
+gem 'figaro'
+
+# Use Redis Rails for data store
+gem 'redis-rails'
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
@@ -37,13 +47,6 @@ group :production do
   gem 'newrelic_rpm'
 end
 
-
-gem 'bootstrap-sass', '~> 3.3.6'
-
-gem 'rack-cors', :require => 'rack/cors'
-gem 'google-id-token'
-
-gem 'figaro'
 
 group :development, :test do
   gem 'awesome_print', require:'ap'
