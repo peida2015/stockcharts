@@ -35,6 +35,8 @@ This website is for demonstration purpose only.  Stock data is provided by BarCh
 
 6. Use a binary search helper method in getRangeData to select data within a time range.
 
+7. Use Redis as LRU cached data store to store commonly requested stock data to minimize repeated API calls for popular symbols.
+
 
 ## Features for the Future
 
@@ -42,6 +44,4 @@ This website is for demonstration purpose only.  Stock data is provided by BarCh
 
 2. Integrate StockTwits API for better user interactions with other investors.
 
-3. Use Redis as data store to store commonly requested stock data to minimize repeated API calls for popular symbols.
-
-4. Use Firebase database to store most recently quoted stock symbols for users (So they have a reason to sign-in. :smile:)
+3. Use Firebase database to store most recently quoted stock symbols for users (So they have a reason to sign-in. :smile:)
