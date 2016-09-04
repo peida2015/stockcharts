@@ -31,7 +31,7 @@ gem 'google-id-token'
 gem 'figaro'
 
 # Use Redis Rails for data store
-gem 'redis-rails'
+gem 'redis-rails', '~> 4'
 
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
