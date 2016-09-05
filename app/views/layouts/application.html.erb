@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="google-signin-client_id" content="912893063998-d9ashdsl736vkmofhh9acf9opt45sj3b.apps.googleusercontent.com">
   <title>Stock Charts</title>
-  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true, async: Rails.env == "production" %>
-  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true,  async: Rails.env == "production" %>
+  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true, 'async' => Rails.env == "production" %>
+  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true,  'async' => Rails.env == "production" %>
   <%= csrf_meta_tags %>
 
   <script src="https://www.gstatic.com/firebasejs/3.2.1/firebase.js"></script>
