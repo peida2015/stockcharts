@@ -11,7 +11,14 @@
   if (window.utilities === undefined) {
     window.utilities = {};
   };
-  var GraphBuilder = _GraphBuilder.GraphBuilder = function (stockData, req = {}, height = 600, width = 1000, xPadding = 100, yPadding = 50) {
+  var GraphBuilder = _GraphBuilder.GraphBuilder = function (stockData, req, height, width, xPadding, yPadding) {
+    req = req === undefined ? {} : req;
+    height = height === undefined ? 600 : height;
+    width = width === undefined ? 1000 : width;
+    xPadding = xPadding === undefined ? 100 : xPadding;
+    yPadding = yPadding === undefined ? 50 : yPadding;
+
+
     this.stockData = stockData; //Note: only "results" from response
     this.graphData = [];
     this.req = req;
@@ -123,7 +130,10 @@
       };
     },
 
-    dataSelector: function (startDate = null, endDate = null) {
+    dataSelector: function (startDate, endDate) {
+      startDate = startDate === undefined ? null : startDate;
+      endDate = endDate === undefined ? null : endDate;
+
       if (startDate === endDate) {
         this.graphData = this.weeklyData;
       } else {
@@ -133,7 +143,7 @@
 
     },
 
-    getRangeData: function (data, startDate, endDate = null) {
+    getRangeData: function (data, startDate, endDate) {
       if (endDate === null || endDate === undefined) {
         var endIdx = data.length;
       } else {
