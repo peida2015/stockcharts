@@ -7,11 +7,11 @@
   <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true, :async => Rails.env == "production" %>
   <%= javascript_include_tag 'application', 'data-turbolinks-track' => true,  :async => Rails.env == "production" %>
   <%= csrf_meta_tags %>
-  <script async src="https://apis.google.com/js/platform.js?onload=renderButton"></script>
 
   <script src="https://www.gstatic.com/firebasejs/3.2.1/firebase.js"></script>
   <script async src="https://www.gstatic.com/firebasejs/3.1.0/firebase-auth.js"></script>
   <script async src="https://d3js.org/d3.v4.min.js"></script>
+  <script async defer src="https://apis.google.com/js/platform.js?onload=renderButton"></script>
 </head>
 <body>
   <nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
