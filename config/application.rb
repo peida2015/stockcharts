@@ -42,7 +42,7 @@ module StockDataApiWrapper
       end
     end
 
-    config.middleware.use Rack::Deflater
+    config.middleware.insert_before 0, Rack::Deflater
 
     config.active_record.raise_in_transactional_callbacks = true
   end
