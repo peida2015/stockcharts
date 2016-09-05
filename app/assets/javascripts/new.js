@@ -19,7 +19,7 @@ $(document).ready(function () {
       callbacks.signOutApp();
     } else {
       callbacks.signBackIn();
-    }
+    };
   };
 
   window.callbacks.signOutApp = function () {
@@ -96,7 +96,7 @@ function onSignIn (googleUser) {
         });
     } else {
         console.log('User already signed-in Firebase.');
-    }
+    };
 
     var button = $('a:contains("Login")');
     if (button.length > 0) {
@@ -118,9 +118,9 @@ function isUserEqual(googleUser, firebaseUser) {
         {
           // We don't need to reauth the Firebase connection.
           return true;
-        }
-      }
-    }
+        };
+      };
+    };
     return false;
 };
 
@@ -135,4 +135,4 @@ function renderButton(signInCB = onSignIn) {
   };
 
   gapi.signin2.render('g-signin2', buttonSpec);
-}
+};
