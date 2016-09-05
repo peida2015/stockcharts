@@ -3,7 +3,7 @@
 (function () {
   if (window.callbacks === undefined) {
     window.callbacks = {};
-  }
+  };
 
   window.callbacks.xhrReq = function (id_token = "limited", symbol = "GOOG", startDate = "20130510", endDate = "20150401") {
     var url = './stock_data';
@@ -16,7 +16,7 @@
     } else {
       xhr = new XDomainRequest();
       xhr.open(method, url);
-    }
+    };
 
     // Must set this header for X-Domain requests.
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -27,7 +27,7 @@
       } else {
         window.callbacks.buildGraph(JSON.parse(xhr.response));
         console.log("success");
-      }
+      };
     };  // Callback function for the XMLHttpRequest.
 
     var token_data = JSON.stringify({
@@ -38,6 +38,6 @@
       "endDate": endDate
     });
     xhr.send(token_data);
-  }
+  };
 
 })();
