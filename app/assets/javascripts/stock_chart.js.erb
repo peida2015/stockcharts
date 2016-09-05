@@ -6,11 +6,11 @@
 
   if (window.callbacks === undefined) {
     window.callbacks = {};
-  }
+  };
 
   if (window.utilities === undefined) {
     window.utilities = {};
-  }
+  };
   var GraphBuilder = _GraphBuilder.GraphBuilder = function (stockData, req = {}, height = 600, width = 1000, xPadding = 100, yPadding = 50) {
     this.stockData = stockData; //Note: only "results" from response
     this.graphData = [];
@@ -74,25 +74,24 @@
               break;
             default:
               break;
-          }
+          };
           continue;
-        } else {
         };
 
         if (currDay.getDay() === 1) {
           currWkOpen = this.stockData[i].open;
           currWk["tradingDay"] = currDay;
-        }
+        };
 
         currWkVol += this.stockData[i].volume;
 
         if (this.stockData[i].high > currWkHigh) {
           currWkHigh = this.stockData[i].high;
-        }
+        };
 
         if (this.stockData[i].low < currWkLow) {
           currWkLow = this.stockData[i].low;
-        }
+        };
 
         // If Friday is missing, take Thursday as last day of the week. Ignore any week with more than two days missing.
         if (currDay.getDay() === 5 ||
@@ -111,8 +110,8 @@
             } else {
               currWk["tradingDay"] = new Date(currDay-1000*60*60*24*3);
               currWk["open"] = this.stockData[i-2].open;
-            }
-          }
+            };
+          };
           this.weeklyData.push(currWk);
           currWkHigh = 0;
           currWkLow = Infinity;
@@ -120,8 +119,8 @@
           currWkClose = null;
           currWkVol = 0;
           currWk = {};
-        }
-      }
+        };
+      };
     },
 
     dataSelector: function (startDate = null, endDate = null) {
@@ -130,7 +129,7 @@
       } else {
         var data = this.getRangeData(this.stockData, startDate, endDate);
         this.graphData = data.length <= 150 || this.chartType === "line" ? data : this.getRangeData(this.weeklyData, startDate, endDate);
-      }
+      };
 
     },
 
@@ -139,7 +138,7 @@
         var endIdx = data.length;
       } else {
         var endIdx = window.utilities.bsDate(data, endDate);
-      }
+      };
 
       var startIdx = window.utilities.bsDate(data, startDate);
 
@@ -183,7 +182,7 @@
         if (this.graphData[idx].low < min) {
             min = this.graphData[idx].low;
         };
-      }
+      };
 
       this.yScale = d3.scaleLinear()
         .domain([min, max])
@@ -357,7 +356,7 @@
         low.text('');
         volume.text('');
         tDay.text('');
-      }
+      };
     },
 
     drawVolAxes: function () {
@@ -465,7 +464,7 @@
               bgColor.attr('width', symEl.node().getBBox().width|10);
             } else if (d3.event.key === "Enter") {
               that.dataRequest(symEl.text().toUpperCase().trim());
-            }
+            };
           });
 
           d3.select('.symbol image').on('click', function () {
@@ -473,7 +472,7 @@
             if (symEl.text().length !== 0) {
               that.dataRequest(symEl.text().toUpperCase().trim());
             };
-          })
+          });
         });
 
       // Percent change
@@ -487,7 +486,7 @@
         .attr('y', -symb.select('text').node().getBBox().height+5)
         .attr('height', '20')
         .attr('width', '20')
-        .attr('xlink:href', "<%= image_url('search.jpg') %>");;
+        .attr('xlink:href', "<%= image_url('search.jpg') %>");
 
       // Fade in animation for hint text.
       var fadeInText = function () {
@@ -581,10 +580,11 @@
         } else {
           rangeRect.attr('x', newPos+4);
           rangeRect.attr('width', otherHandlePos-newPos);
-        }
+        };
+
         if (d3.event.type === "end") {
           dragEnd();
-        }
+        };
       };
 
       var dragEnd = function () {
@@ -619,8 +619,8 @@
 
           d3.select(this).attr('x', newPos);
           dragEnd();
-        }
-      }
+        };
+      };
 
       rangeRect.call(d3.drag().on("drag", dragRangeRect));
     },
@@ -655,7 +655,7 @@
           parseInt(el.attr('x')) === 5 ? that.chartType = "line" : that.chartType = "candlesticks";
 
           that.updateChart();
-        }
+        };
       };
 
       var lineIconBg = chartIcons.append('rect')
@@ -695,7 +695,7 @@
         };
         // Wait until flash text finished fading effects before removal.
         setTimeout(remov, 4000);
-      }
+      };
     },
 
     createChart: function () {
@@ -705,7 +705,7 @@
       } else {
         var line = this.drawLineGraph();
         this.drawPricesBox(line);
-      }
+      };
       this.drawVolAxes();
       this.drawVolBars();
       this.drawSymbol();
@@ -723,7 +723,7 @@
         .datum(this.graphData)
 
         this.createChart();
-      }
+      };
     },
 
     updateData: function (stockData, req) {
@@ -747,7 +747,7 @@
       this.drawChartTypeSelector();
     }
 
-  }
+  };
 
   var buildGraph = callbacks.buildGraph = function (data) {
     $('#spinner').modal('hide');
@@ -761,14 +761,14 @@
         graph.drawSVG();
       } else {
         graph.updateData(data.results, data.request);
-      }
-    }
+      };
+    };
 
-  }
+  };
 
   window.utilities.bsDate = function (data, date) {
       // A number is returned for any date input.
-      if (data.length <= 1) { return 0;  }
+      if (data.length <= 1) { return 0;  };
 
       var oneDay = 1000*60*60*24;
 
@@ -777,14 +777,14 @@
       var timeDiff = data[midIdx].tradingDay - date;
 
       // There is no exact Datetime match, match tolerance is oneDay.
-      if (Math.abs(timeDiff) < oneDay) { return midIdx; }
+      if (Math.abs(timeDiff) < oneDay) { return midIdx; };
 
       if (timeDiff > 0) {
         return window.utilities.bsDate(data.slice(0, midIdx), date);
       } else {
-        return midIdx + window.utilities.bsDate(data.slice(midIdx, data.length), date)
-      }
+        return midIdx + window.utilities.bsDate(data.slice(midIdx, data.length), date);
+      };
 
-    }
+    };
 
 })();
