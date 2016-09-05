@@ -9,7 +9,7 @@ $(document).ready(function () {
     apiKey: "AIzaSyDcwNKGkY22_SP4PQ1tUu8xOvkrfvuywFY",
     authDomain: "voltaic-tooling-115723.firebaseapp.com",
     databaseURL: "https://voltaic-tooling-115723.firebaseio.com",
-    storageBucket: "voltaic-tooling-115723.appspot.com",
+    storageBucket: "voltaic-tooling-115723.appspot.com"
   };
 
   firebase.initializeApp(config);
@@ -124,7 +124,8 @@ function isUserEqual(googleUser, firebaseUser) {
     return false;
 };
 
-function renderButton(signInCB = onSignIn) {
+function renderButton(signInCB) {
+  signInCB = typeof signInCB !== 'function' ? onSignIn : signInCB;
   var buttonSpec = {
     'theme': 'dark',
     'longtitle': false,

@@ -5,7 +5,12 @@
     window.callbacks = {};
   };
 
-  window.callbacks.xhrReq = function (id_token = "limited", symbol = "GOOG", startDate = "20130510", endDate = "20150401") {
+  window.callbacks.xhrReq = function (id_token, symbol, startDate, endDate) {
+    id_token = id_token === undefined ? "limited" : id_token;
+    symbol = symbol === undefined ? "GOOG" : symbol;
+    startDate = startDate === undefined ? "20130510" : startDate;
+    endDate = endDate === undefined ? "20150401" : endDate;
+
     var url = './stock_data';
     var method = 'POST';
     var xhr = new XMLHttpRequest();
