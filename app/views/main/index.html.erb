@@ -1,16 +1,21 @@
 <div class="welcome">
-  <div class="top-margin">
-    <h2 class="gsi">Welcome to</h2>
-    <div class="centered">
-      <%= image_tag('logo.png') %>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-xs-8 col-xs-offset-2 col-sm-6 col-sm-offset-3 col-lg-4 col-lg-offset-4">
+        <%= image_tag 'logo.png', :class => 'img-fluid logo' %>
+      </div>
     </div>
-    <h2 class="gsi">
+    <h2 class="text-primary text-center">
       Please sign-in through Google before continuing.
     </h2>
-    <div class="centered">
-      <div class="g-signin2" id="g-signin2"></div>
-      <div class="demo" onclick="window.callbacks.tryOut()">
-        <div class="trial-text centered">Try It for 5 Minutes</div>
+    <div class="col-md-6 top-margin">
+      <div class="centered" id="g-signin2"></div>
+    </div>
+    <div class="col-md-6 top-margin">
+      <div class="centered">
+        <div class="demo " onclick="window.callbacks.tryOut()">
+          <div class="trial-text centered">Try It for 5 Minutes</div>
+        </div>
       </div>
     </div>
   </div>
