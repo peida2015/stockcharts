@@ -5,8 +5,9 @@ $(document).ready(function () {
     var ctrlBuilder = window._GraphBuilder = {};
   };
 
-  var CtrlBuilder = window._GraphBuilder.CtrlBuilder = function () {
+  var CtrlBuilder = window._GraphBuilder.CtrlBuilder = function (graphBuilder) {
     this.buildEl = $('.ctrlPanel');
+    this.graphBuilder = graphBuilder;
   };
 
   CtrlBuilder.prototype = {
@@ -15,19 +16,38 @@ $(document).ready(function () {
           .addClass('container icons col-xs-6 col-sm-4 col-md-2')
           .appendTo(this.buildEl);
 
+      var that = this;
+
+      var clickHandler = function (event) {
+        if (!this.disabled) {
+          this.disabled = true;
+          if (that.graphBuilder.chartType === 'candlesticks') {
+            that.graphBuilder.chartType = 'line';
+            $('.cs-icon')[0].disabled = false;
+          } else {
+            that.graphBuilder.chartType = 'candlesticks';
+            $('.lg-icon')[0].disabled = false;
+          }
+
+          that.graphBuilder.updateChart();
+        };
+      };
       // Make line graph button
       var lgButton = $('<button>')
         .addClass('btn btn-default lg-icon col-xs-5')
-        .appendTo(iconsContainer);
+        .appendTo(iconsContainer).click(clickHandler);
 
       $('<img>').addClass('img-responsive').attr('src', '<%= image_url('lg-icon.png') %>').appendTo(lgButton);
 
       // Make candlesticks graph button
       var csButton = $('<button>')
         .addClass('btn btn-default cs-icon col-xs-5 col-xs-offset-1')
-        .appendTo(iconsContainer);
+        .appendTo(iconsContainer).click(clickHandler);
 
       $('<img>').addClass('img-responsive').attr('src', '<%= image_url('cs-icon.png') %>').appendTo(csButton);
+
+      // candlesticks button is disabled initially
+      csButton[0].disabled = true;
 
       return iconsContainer;
     },
