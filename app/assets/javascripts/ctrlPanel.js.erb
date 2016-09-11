@@ -1,0 +1,40 @@
+"use strict";
+
+$(document).ready(function () {
+  if (window._GraphBuilder === undefined) {
+    var ctrlBuilder = window._GraphBuilder = {};
+  };
+
+  var CtrlBuilder = window._GraphBuilder.CtrlBuilder = function () {
+    this.buildEl = $('.ctrlPanel');
+  };
+
+  CtrlBuilder.prototype = {
+    chartTypeSelectorButtons: function () {
+      var iconsContainer = $('<div>')
+          .addClass('container icons col-xs-6 col-sm-4 col-md-2')
+          .appendTo(this.buildEl);
+
+      // Make line graph button
+      var lgButton = $('<button>')
+        .addClass('btn btn-default lg-icon col-xs-5')
+        .appendTo(iconsContainer);
+
+      $('<img>').addClass('img-responsive').attr('src', '<%= image_url('lg-icon.png') %>').appendTo(lgButton);
+
+      // Make candlesticks graph button
+      var csButton = $('<button>')
+        .addClass('btn btn-default cs-icon col-xs-5 col-xs-offset-1')
+        .appendTo(iconsContainer);
+
+      $('<img>').addClass('img-responsive').attr('src', '<%= image_url('cs-icon.png') %>').appendTo(csButton);
+
+      return iconsContainer;
+    },
+
+    symbolInput: function () {
+
+    }
+  };
+
+});

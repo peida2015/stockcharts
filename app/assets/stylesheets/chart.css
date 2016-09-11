@@ -9,7 +9,8 @@
 .yAxis path {
   stroke: blue;
   stroke-width: 0.3px;
-  opacity: 0.5
+  opacity: 0.5;
+  font-family: 'Syncopate', sans-serif;
 }
 
 .xAxis .grid, .yAxis .grid {

@@ -1,9 +1,9 @@
 <div class="header-margin hidden-xs"></div>
-<div class="ctrlPanel"></div>
-<div class="welcome">
+<div class="ctrlPanel container-fluid"></div>
+<div class="welcome vertically-center">
   <div class="container-fluid">
       <!-- Logo container -->
-      <div class="container col-xs-12 col-lg-6 vertical-margins">
+      <div class="container col-xs-12 col-lg-6">
         <div class="col-lg-8 col-lg-offset-2">
           <%= image_tag 'logo.png', :class => 'img-responsive logo centered' %>
         </div>
@@ -11,8 +11,8 @@
       <!-- Logo container END-->
 
       <!-- Sign-in Buttons container -->
-      <div class="container col-xs-12 col-lg-6 vertical-margins">
-        <h2 class="text-primary text-center top-margin">
+      <div class="container col-xs-12 col-lg-6">
+        <h2 class="text-primary text-center top-margin title-font">
           Please sign-in through Google before continuing.
         </h2>
         <div class="top-margin">
@@ -20,8 +20,10 @@
         </div>
         <div class="top-margin">
           <div class="centered">
-            <div class="demo " onclick="window.callbacks.tryOut()">
-              <div class="trial-text centered">Try It for 5 Minutes</div>
+            <div class="demo trial-text container" onclick="window.callbacks.tryOut()">
+              <div class="centered">
+                Try It for 5 Minutes
+              </div>
             </div>
           </div>
         </div>
