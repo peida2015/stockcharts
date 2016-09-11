@@ -36,6 +36,7 @@ div.header-margin {
   margin-bottom: 8%;
 }
 
+// navbar brand icon
 img.icon {
   margin: 0 auto;
   height: 100%;
@@ -61,6 +62,11 @@ img.icon {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
+}
+
+// chart type icons
+img.chart-icons {
+  height: 42px;
 }
 
 /* Demo button text */

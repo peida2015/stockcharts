@@ -770,6 +770,7 @@
         graph = window._GraphBuilder.singleGraphInstance = new window._GraphBuilder.GraphBuilder(data.results, data.request, 600, $('body').width());
         ctrlPanel = window._GraphBuilder.singleCtrlInstance = new window._GraphBuilder.CtrlBuilder(graph);
         ctrlPanel.chartTypeSelectorButtons();
+        ctrlPanel.symbolInput();
         graph.chartType = "candlesticks";
         graph.dataPreparation(data.results);
         graph.drawSVG();

@@ -13,20 +13,20 @@ $(document).ready(function () {
   CtrlBuilder.prototype = {
     chartTypeSelectorButtons: function () {
       var iconsContainer = $('<div>')
-          .addClass('container icons col-xs-6 col-sm-4 col-md-2')
+          .addClass('btn-group btn-group-xs icons col-xs-5 col-sm-3 col-md-2')
           .appendTo(this.buildEl);
 
       var that = this;
 
       var clickHandler = function (event) {
-        if (!this.disabled) {
-          this.disabled = true;
+        if (!$(this).hasClass('active')) {
+          $(this).addClass('active');
           if (that.graphBuilder.chartType === 'candlesticks') {
             that.graphBuilder.chartType = 'line';
-            $('.cs-icon')[0].disabled = false;
+            $('.cs-icon').removeClass('active');
           } else {
             that.graphBuilder.chartType = 'candlesticks';
-            $('.lg-icon')[0].disabled = false;
+            $('.lg-icon').removeClass('active');
           }
 
           that.graphBuilder.updateChart();
@@ -37,23 +37,32 @@ $(document).ready(function () {
         .addClass('btn btn-default lg-icon col-xs-5')
         .appendTo(iconsContainer).click(clickHandler);
 
-      $('<img>').addClass('img-responsive').attr('src', '<%= image_url('lg-icon.png') %>').appendTo(lgButton);
+      $('<img>').addClass('chart-icons').attr('src', '<%= image_url('lg-icon.png') %>').appendTo(lgButton);
 
-      // Make candlesticks graph button
+      // Make candlesticks graph button with default active class
       var csButton = $('<button>')
-        .addClass('btn btn-default cs-icon col-xs-5 col-xs-offset-1')
+        .addClass('btn btn-default cs-icon col-xs-5 col-xs-offset-1 active')
         .appendTo(iconsContainer).click(clickHandler);
 
-      $('<img>').addClass('img-responsive').attr('src', '<%= image_url('cs-icon.png') %>').appendTo(csButton);
-
-      // candlesticks button is disabled initially
-      csButton[0].disabled = true;
+      $('<img>').addClass('chart-icons').attr('src', '<%= image_url('cs-icon.png') %>').appendTo(csButton);
 
       return iconsContainer;
     },
 
     symbolInput: function () {
+      var inputGroup = $('<div>').addClass('input-group input-group-lg col-xs-6 col-md-4 col-md-offset-4').appendTo(this.buildEl);
 
+      var symbolInput =
+      $('<input>').attr({ type: 'text', id:'symbol', value: 'GOOG', placeholder: "Type Symbol Here."})
+        .addClass('form-control').appendTo(inputGroup);
+
+      var buttonAddon = $('<span>').addClass('input-group-btn').appendTo(inputGroup);
+
+      var lookupButton = $('<button>').addClass('btn btn-default')
+          .appendTo(buttonAddon)
+          .append('<span class="glyphicon glyphicon-search"></span>');
+
+      return inputGroup;
     }
   };
 
