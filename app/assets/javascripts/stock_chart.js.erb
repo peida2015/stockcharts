@@ -448,7 +448,7 @@
         .text(function (d) {
           return d[0].symbol;
         })
-        .on('mouseover', fadeInText);
+        // .on('mouseover', fadeInText);
 
       var bgColor = symb.insert('rect', ":first-child")
         .attr('x', 0)
@@ -476,12 +476,12 @@
             };
           });
 
-          d3.select('.symbol image').on('click', function () {
-            var symEl = d3.select('.symbol text');
-            if (symEl.text().length !== 0) {
-              that.dataRequest(symEl.text().toUpperCase().trim());
-            };
-          });
+          // d3.select('.symbol image').on('click', function () {
+          //   var symEl = d3.select('.symbol text');
+          //   if (symEl.text().length !== 0) {
+          //     that.dataRequest(symEl.text().toUpperCase().trim());
+          //   };
+          // });
         });
 
       // Percent change
@@ -491,28 +491,28 @@
       symb.append('text').attr('class', change >= 0 ? 'pos' : 'neg')
         .attr('x', 70).text(d3.format("+.2%")(change));
 
-      symb.append('image').attr('class', "searchIcon").attr('x', -25)
-        .attr('y', -symb.select('text').node().getBBox().height+5)
-        .attr('height', '20')
-        .attr('width', '20')
-        .attr('xlink:href', "<%= image_url('search.jpg') %>");
+      // symb.append('image').attr('class', "searchIcon").attr('x', -25)
+      //   .attr('y', -symb.select('text').node().getBBox().height+5)
+      //   .attr('height', '20')
+      //   .attr('width', '20')
+      //   .attr('xlink:href', "<%= image_url('search.jpg') %>");
 
       // Fade in animation for hint text.
-      var fadeInText = function () {
-        d3.select('text.teach').transition().duration(3000)
-        .style("opacity", 1)
-        .delay(1000)
-        .transition().duration(1000)
-        .style("opacity", 0);
-      };
+      // var fadeInText = function () {
+      //   d3.select('text.teach').transition().duration(3000)
+      //   .style("opacity", 1)
+      //   .delay(1000)
+      //   .transition().duration(1000)
+      //   .style("opacity", 0);
+      // };
 
       // Hint text
-      symb.append('text').attr('class', 'teach')
-        .text('Click. Type SYMBOL when yellow. Hit ENTER.')
-        .attr('y', 30);
+      // symb.append('text').attr('class', 'teach')
+      //   .text('Click. Type SYMBOL when yellow. Hit ENTER.')
+      //   .attr('y', 30);
 
       // Initial animation.
-      fadeInText();
+      // fadeInText();
 
     },
 
@@ -753,7 +753,6 @@
       this.setSVG();
       this.createChart();
       this.drawTimeline();
-      this.drawChartTypeSelector();
     }
 
   };
