@@ -50,10 +50,12 @@ $(document).ready(function () {
     },
 
     symbolInput: function () {
-      var inputGroup = $('<div>').addClass('input-group input-group-lg col-xs-6 col-md-4 col-md-offset-4').appendTo(this.buildEl);
+      var inputGroup = $('<form>').addClass('input-group input-group-lg col-xs-6 col-md-4 col-md-offset-4').appendTo(this.buildEl);
 
       var that = this;
       var searchClickHandler = function (evt) {
+        evt.preventDefault();
+        
         var newSymbol = $('input').val().toUpperCase().trim();
         $('input').val(newSymbol);
 
@@ -67,6 +69,7 @@ $(document).ready(function () {
       var buttonAddon = $('<span>').addClass('input-group-btn').appendTo(inputGroup);
 
       var lookupButton = $('<button>').addClass('btn btn-default')
+          .attr("type", "submit")
           .appendTo(buttonAddon)
           .append('<span class="glyphicon glyphicon-search"></span>')
           .click(searchClickHandler);
