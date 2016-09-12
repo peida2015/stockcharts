@@ -33,7 +33,6 @@
     setSVG: function () {
       this.svgBody = d3.select('body')
         .append('div').classed('centered', true)
-        .classed('top-margin', true)
         .append('svg').attr('class', 'chart')
         .attr('height', this.height)
         .attr('width', this.width);

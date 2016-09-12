@@ -52,6 +52,14 @@ $(document).ready(function () {
     symbolInput: function () {
       var inputGroup = $('<div>').addClass('input-group input-group-lg col-xs-6 col-md-4 col-md-offset-4').appendTo(this.buildEl);
 
+      var that = this;
+      var searchClickHandler = function (evt) {
+        var newSymbol = $('input').val().toUpperCase().trim();
+        $('input').val(newSymbol);
+
+        that.graphBuilder.dataRequest(newSymbol);
+      };
+
       var symbolInput =
       $('<input>').attr({ type: 'text', id:'symbol', value: 'GOOG', placeholder: "Type Symbol Here."})
         .addClass('form-control').appendTo(inputGroup);
@@ -60,7 +68,8 @@ $(document).ready(function () {
 
       var lookupButton = $('<button>').addClass('btn btn-default')
           .appendTo(buttonAddon)
-          .append('<span class="glyphicon glyphicon-search"></span>');
+          .append('<span class="glyphicon glyphicon-search"></span>')
+          .click(searchClickHandler);
 
       return inputGroup;
     }
