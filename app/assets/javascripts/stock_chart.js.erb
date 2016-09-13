@@ -18,7 +18,6 @@
     xPadding = xPadding === undefined ? 100 : xPadding;
     yPadding = yPadding === undefined ? 50 : yPadding;
 
-
     this.stockData = stockData; //Note: only "results" from response
     this.graphData = [];
     this.req = req;
@@ -753,8 +752,12 @@
       this.setSVG();
       this.createChart();
       this.drawTimeline();
-    }
+    },
 
+    resizeSVG: function() {
+      $('svg').remove();
+      this.drawSVG();
+    }
   };
 
   var buildGraph = callbacks.buildGraph = function (data) {
@@ -765,13 +768,41 @@
       var ctrlPanel = window._GraphBuilder.singleCtrlInstance;
 
       if (graph === undefined) {
-        graph = window._GraphBuilder.singleGraphInstance = new window._GraphBuilder.GraphBuilder(data.results, data.request, 600, $('body').width());
-        ctrlPanel = window._GraphBuilder.singleCtrlInstance = new window._GraphBuilder.CtrlBuilder(graph);
+        // Initialize CtrlBuilder and GraphBuilder instances
+        ctrlPanel = window._GraphBuilder.singleCtrlInstance = new window._GraphBuilder.CtrlBuilder();
+
+        // Build ctrlPanel
         ctrlPanel.chartTypeSelectorButtons();
         ctrlPanel.symbolInput();
+
+        // Set correct size for SVG
+        var windowHeight = window.innerHeight;
+        var ctrlPanelBottom = $('div.ctrlPanel')[0].getBoundingClientRect().bottom;
+        var windowWidth = window.innerWidth;
+
+        graph = window._GraphBuilder.singleGraphInstance = new window._GraphBuilder.GraphBuilder(data.results, data.request, windowHeight-ctrlPanelBottom-windowHeight*0.03, windowWidth*0.98);
+
+        ctrlPanel.setGraphBuilder(graph);
+
+        // Build initial graph
         graph.chartType = "candlesticks";
         graph.dataPreparation(data.results);
         graph.drawSVG();
+
+        var resizeResponse = function () {
+          // Reset size of SVG
+          var windowHeight = window.innerHeight;
+          var ctrlPanelBottom = $('div.ctrlPanel')[0].getBoundingClientRect().bottom;
+          var windowWidth = window.innerWidth;
+
+          graph.width = windowWidth*0.98;
+          graph.height = windowHeight-ctrlPanelBottom-windowHeight*0.03;
+
+          graph.resizeSVG();
+        };
+
+        $(window).resize(resizeResponse);
+
       } else {
         graph.updateData(data.results, data.request);
       };
