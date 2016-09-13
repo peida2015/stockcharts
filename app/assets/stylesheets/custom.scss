@@ -28,7 +28,7 @@ nav {
 
 div.header-margin {
   width: 100%;
-  height: 52px;
+  height: 80px;
 }
 
 .vertical-margins {
@@ -57,11 +57,10 @@ img.icon {
   cursor: pointer;
 }
 
-.vertically-center {
+.margin-on-top {
   // Vertically center text within button.
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
+  position: relative;
+  top: 70px;
 }
 
 // chart type icons
