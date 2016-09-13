@@ -775,6 +775,18 @@
       } else {
         graph.updateData(data.results, data.request);
       };
+    } else {
+        var flashText = $('span.not-found')
+        var add = function () {
+          flashText.addClass('active');
+        };
+
+        if (flashText.hasClass('active')) {
+          flashText.toggleClass('active');
+          setTimeout(add, 0);
+        } else {
+          flashText.addClass('active');
+        };
     };
 
   };

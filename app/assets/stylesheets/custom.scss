@@ -15,7 +15,7 @@ nav {
 
 
 .title-font {
-  font-family: 'BioRhyme Expanded', serif;
+  font-family: 'Syncopate', serif;
 }
 
 .centered {
@@ -83,6 +83,28 @@ img.chart-icons {
   margin-left: -102px;
   position: absolute;
   background-color: yellow;
+}
+
+// Originally hidden text for symbol not found.
+.not-found {
+  position: fixed;
+  font-family: 'Syncopate', serif;
+  font-size: 16px;
+  font-weight: bold;
+  background-color: yellow;
+  padding: 10px;
+  border: 1px black solid;
+  border-radius: 3px;
+  top: -100%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+//
+.not-found.active {
+  z-index: 1031;
+  animation-name: slideInFromTop;
+  animation-duration: 4s;
 }
 
 /* Timer */
@@ -154,4 +176,19 @@ span.timer {
     transform: scaleY(1.0);
     -webkit-transform: scaleY(1.0);
   }
+}
+
+
+@-webkit-keyframes slideInFromTop {
+  0% { top: -100%; }
+  25% { top: 0%; }
+  75% { top: 0%; }
+  100% { top: -100%; }
+}
+
+@keyframes slideInFromTop {
+  0% { top: -100%; }
+  25% { top: 0%; }
+  75% { top: 0%; }
+  100% { top: -100%; }
 }

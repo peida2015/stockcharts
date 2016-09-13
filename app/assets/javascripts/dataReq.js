@@ -29,6 +29,8 @@
     xhr.onload = function () {
       if (xhr.status !== 200) {
         console.log("Request failed. "+xhr.status);
+        // Attempt to reload to fix authentication problem.
+        location.reload();
       } else {
         window.callbacks.buildGraph(JSON.parse(xhr.response));
         console.log("success");
